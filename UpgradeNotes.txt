@@ -1,0 +1,86 @@
+10/27/2017 Installed Roshine into Moodle 2.3 on Odroid #1. At each redeclare error
+during the installation, I added ros_ to the function being reported. Changed a bunch in 
+lib.php and locallib.php, until the install finaly made it to the post install settings.
+
+10/27/2017 Verified that the MooTyper by Teri in the Points Course still works as expected.
+
+10/27/2017 Created a Roshine activity - Setup worked as expected and led me to the Exercise page.
+
+10/27/2017 1330 - Found the first problem after completing two exercises when I went to view grades
+I got this: Debug info: Unknown column 'mdl_roshine_attempts.ros_suspicion' in 'field list'
+I fixed it by changing the field name to ros_suspcion. I also changed the xml file that 
+creates the attempts table during installation.
+
+10/27/2017 1345 - Logged in as Joe Schmidlap and completed Exercise 1 with no problems. As
+admin, I was able to see his grades. Evidently, Roshine does not have view own grades. At
+least there is no php file for it.
+
+10/27/2017 1500 - Tried installing on Moodle 2.4 and it failed. Changed the attempts ros_suspicion
+field name back to just suspicion, and then it installed okay. Used the XMLDB editor to make
+the change, then saved to release folder, then uninstalled.
+
+10/27/2017 1515 - Reinstalled with the changed xml file and this time it worked just fine.
+Student had to log out and then back in before being able to see any created Roshine activity.
+Discovered that Test 01.txt had /**/ at the end of exercise 2, which made the progam think
+there was an exercise 3. Erased /**/ to fix it.
+
+10/27/2017 1555 - Install to Moodle 2.5 worked as expected. This Moodle shows ONLY items
+that need upgrading, instead of the complete list of plugins.
+
+10/27/2017 1605 I changed lines 228 and 260 of view.php to get rid of, Chi tiet loi, and
+make it say, Mistake details. This will need to be changed to a language string. There are two
+other items in the same location that need to be fixed...Speed: and Accuracy: Also, will need
+to fix the Nav bar. Roshine takes over and turns both the background and text, white.
+
+10/27/2017 1645 - Created a Roshine 2.6 version that worked like the others did.
+
+10/27/2017 1700 - Created a Roshine 2.7. While setting up the first activity,
+I got the following three debug messages, and fixed them, while leaving the
+old lines there but commented out. Page refresh and the disappeared.
+
+get_context_instance() is deprecated, please use context_xxxx::instance() instead.
+
+    line 3670 of /lib/deprecatedlib.php: call to debugging()
+    line 49 of /mod/roshine/view.php: call to get_context_instance()
+
+add_to_log() has been deprecated, please rewrite your code to the new events API
+
+    line 48 of /lib/deprecatedlib.php: call to debugging()
+    line 50 of /mod/roshine/view.php: call to add_to_log()
+
+get_context_instance() is deprecated, please use context_xxxx::instance() instead.
+
+    line 3670 of /lib/deprecatedlib.php: call to debugging()
+    line 319 of /mod/roshine/view.php: call to get_context_instance()
+
+10/27/2017 1704 - When I went to setup, mod_setup.php generated these two:
+
+get_context_instance() is deprecated, please use context_xxxx::instance() instead.
+
+    line 3670 of /lib/deprecatedlib.php: call to debugging()
+    line 82 of /mod/roshine/mod_setup.php: call to get_context_instance()
+
+get_context_instance() is deprecated, please use context_xxxx::instance() instead.
+
+    line 3670 of /lib/deprecatedlib.php: call to debugging()
+    line 117 of /mod/roshine/mod_setup.php: call to get_context_instance()
+
+Tried a quick fix, but it did not work.
+
+10/27/2017 1715 Ignored and proceded on to typing page where I go this one:
+
+get_context_instance() is deprecated, please use context_xxxx::instance() instead.
+
+    line 3670 of /lib/deprecatedlib.php: call to debugging()
+    line 153 of /mod/roshine/view.php: call to add_to_log()
+
+10/28/2017 1700 - Fixed all of the get_context problems listed above for yesterday.
+Been fixing code errors and warnings. Left off working while on eins.php
+
+02/27/2018 Added comments in typer.js file translating some of the variable names to English.
+
+02/22/2019 Finally decided to do more work on Roshine. Started working on view.php file
+to get it 'similar' to MooTyper. Added grade Remove capability from View all grades which
+opens the gview.php file. Had to add the attrem.php file to get Remove to work.
+02/22/2019 Add the three links, Add new exercise / category, Import lesson / KB layout, and
+Export / edit exercises, to the Roshine edit menu.
