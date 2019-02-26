@@ -134,26 +134,41 @@ function xmldb_roshine_upgrade($oldversion) {
 
     // New field usepassword added after timeclose for version 3.1.2.
     if ($oldversion < 2016080700) {
-        // Define field usepassword to be added to mootyper.
-        $table = new xmldb_table('mootyper');
+        // Define field usepassword to be added to roshine.
+        $table = new xmldb_table('roshine');
         $field = new xmldb_field('usepassword', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'timeclose');
         // Conditionally launch add field usepassword.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        // Mootyper savepoint reached.
-        upgrade_mod_savepoint(true, 2016080700, 'mootyper');
+        // roshine savepoint reached.
+        upgrade_mod_savepoint(true, 2016080700, 'roshine');
     }
 
     // New field continuoustyping added after showkeyboard for version 3.1.4.
     if ($oldversion < 2017060400.2) {
-        // Define field continuoustype to be added to mootyper.
-        $table = new xmldb_table('mootyper');
+        // Define field continuoustype to be added to roshine.
+        $table = new xmldb_table('roshine');
         $field = new xmldb_field('continuoustype', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'showkeyboard');
         // Conditionally launch add field continuoustype.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        // roshine savepoint reached.
+        upgrade_mod_savepoint(true, 2017060400.2, 'roshine');
+    }
+    // New field countmistypedspaces added after continuoustype for version 3.3.0.
+    if ($oldversion < 2017090200) {
+        // Define field countmistypedspaces to be added to roshine.
+        $table = new xmldb_table('roshine');
+        $field = new xmldb_field('countmistypedspaces', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'continuoustype');
+        // Conditionally launch add field countmistypedspaces.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // roshine savepoint reached.
+        upgrade_mod_savepoint(true, 2017090200, 'roshine');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
