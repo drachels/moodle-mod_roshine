@@ -170,6 +170,33 @@ function xmldb_roshine_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017090200, 'roshine');
     }
 
+    // Three new fields added after countmistypedspaces for version 3.4.1.
+    if ($oldversion < 2017120100) {
+        // Define field statsbgc to be added to mootyper.
+        $table = new xmldb_table('mootyper');
+        $field = new xmldb_field('statsbgc', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'countmistypedspaces');
+        // Conditionally launch add field statsbgc.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Define field keytopbgc to be added to mootyper.
+        $table = new xmldb_table('mootyper');
+        $field = new xmldb_field('keytopbgc', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'statsbgc');
+        // Conditionally launch add field keytopbgc.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Define field keybdbgc to be added to mootyper.
+        $table = new xmldb_table('mootyper');
+        $field = new xmldb_field('keybdbgc', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'keytopbgc');
+        // Conditionally launch add field keybdbgc.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Mootyper savepoint reached.
+        upgrade_mod_savepoint(true, 2017120100, 'mootyper');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

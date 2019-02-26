@@ -25,6 +25,9 @@
         <FIELD NAME="showkeyboard" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="continuoustype" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="countmistypedspaces" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="statsbgc" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Statistics bar background color."/>
+        <FIELD NAME="keytopbgc" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Keytop color setting."/>
+        <FIELD NAME="keybdbgc" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Keyboard background color setting."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
