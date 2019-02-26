@@ -22,8 +22,8 @@
         <FIELD NAME="isexam" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="lesson" NEXT="requiredgoal"/>
         <FIELD NAME="requiredgoal" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="isexam" NEXT="layout"/>
         <FIELD NAME="layout" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="requiredgoal" NEXT="showkeyboard"/>
-        <FIELD NAME="showkeyboard" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="layout"/>
-      </FIELDS>
+        <FIELD NAME="showkeyboard" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="continuoustype" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>      </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
