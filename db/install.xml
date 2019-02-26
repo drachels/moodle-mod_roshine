@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/roshine/db" VERSION="20171027" COMMENT="XMLDB file for Moodle mod/roshine"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="roshine" COMMENT="This is a Roshine instance." NEXT="roshine_grades">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course roshine activity belongs to" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="course" NEXT="intro"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the roshine activity" PREVIOUS="name" NEXT="introformat"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" PREVIOUS="intro" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="introformat" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated" NEXT="timeopen"/>
+        <FIELD NAME="timeopen" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="timemodified" NEXT="timeclose"/>
+        <FIELD NAME="timeclose" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="timeopen" NEXT="password"/>
+        <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="timeclose" NEXT="exercise"/>
+        <FIELD NAME="exercise" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="password" NEXT="lesson"/>
+        <FIELD NAME="lesson" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="exercise" NEXT="isexam"/>
+        <FIELD NAME="isexam" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="lesson" NEXT="requiredgoal"/>
+        <FIELD NAME="requiredgoal" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="isexam" NEXT="layout"/>
+        <FIELD NAME="layout" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="requiredgoal" NEXT="showkeyboard"/>
+        <FIELD NAME="showkeyboard" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="layout"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="roshine_grades" COMMENT="The overall grade for each user, based on their individual and the roshine grademethod setting." PREVIOUS="roshine" NEXT="roshine_lessons">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="roshine"/>
+        <FIELD NAME="roshine" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references roshine.id." PREVIOUS="id" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references user.id." PREVIOUS="roshine" NEXT="grade"/>
+        <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="5" COMMENT="The overall grade from the roshine. Not affected by overrides in the gradebook." PREVIOUS="userid" NEXT="mistakes"/>
+        <FIELD NAME="mistakes" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="How many mistakes in this exercise" PREVIOUS="grade" NEXT="timeinseconds"/>
+        <FIELD NAME="timeinseconds" TYPE="int" LENGTH="15" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Time in seconds" PREVIOUS="mistakes" NEXT="hitsperminute"/>
+        <FIELD NAME="hitsperminute" TYPE="number" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" DECIMALS="2" COMMENT="Hits per minute" PREVIOUS="timeinseconds" NEXT="fullhits"/>
+        <FIELD NAME="fullhits" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="hitsperminute" NEXT="precisionfield"/>
+        <FIELD NAME="precisionfield" TYPE="number" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" DECIMALS="2" PREVIOUS="fullhits" NEXT="timetaken"/>
+        <FIELD NAME="timetaken" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="precisionfield" NEXT="exercise"/>
+        <FIELD NAME="exercise" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="timetaken" NEXT="pass"/>
+        <FIELD NAME="pass" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="exercise" NEXT="attemptid"/>
+        <FIELD NAME="attemptid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="pass"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="roshine_lessons" COMMENT="Exercise categories" PREVIOUS="roshine_grades" NEXT="roshine_exercises">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="lessonname"/>
+        <FIELD NAME="lessonname" TYPE="char" LENGTH="150" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="authorid"/>
+        <FIELD NAME="authorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="lessonname" NEXT="visible"/>
+        <FIELD NAME="visible" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" PREVIOUS="authorid" NEXT="editable"/>
+        <FIELD NAME="editable" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" PREVIOUS="visible" NEXT="courseid"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="editable"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="roshine_exercises" COMMENT="Text to type..." PREVIOUS="roshine_lessons" NEXT="roshine_attempts">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="texttotype"/>
+        <FIELD NAME="texttotype" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Text to type" PREVIOUS="id" NEXT="exercisename"/>
+        <FIELD NAME="exercisename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="(Eg.: Exercise 23)" PREVIOUS="texttotype" NEXT="lesson"/>
+        <FIELD NAME="lesson" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="exercisename" NEXT="snumber"/>
+        <FIELD NAME="snumber" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="lesson"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="roshine_attempts" COMMENT="Activity attemps" PREVIOUS="roshine_exercises" NEXT="roshine_checks">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="roshineid"/>
+        <FIELD NAME="roshineid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="roshineid" NEXT="timetaken"/>
+        <FIELD NAME="timetaken" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="userid" NEXT="inprogress"/>
+        <FIELD NAME="inprogress" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="timetaken" NEXT="ros_suspicion"/>
+        <FIELD NAME="ros_suspicion" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="inprogress"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="roshine_checks" COMMENT="To prevent unauthorised actions" PREVIOUS="roshine_attempts" NEXT="roshine_layouts">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="attemptid"/>
+        <FIELD NAME="attemptid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="mistakes"/>
+        <FIELD NAME="mistakes" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="attemptid" NEXT="hits"/>
+        <FIELD NAME="hits" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="mistakes" NEXT="checktime"/>
+        <FIELD NAME="checktime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="hits"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="roshine_layouts" COMMENT="Keyboard layouts" PREVIOUS="roshine_checks">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="filepath"/>
+        <FIELD NAME="filepath" TYPE="char" LENGTH="500" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" PREVIOUS="filepath" NEXT="jspath"/>
+        <FIELD NAME="jspath" TYPE="char" LENGTH="500" NOTNULL="true" SEQUENCE="false" PREVIOUS="name"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
