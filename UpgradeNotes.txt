@@ -84,3 +84,5 @@ to get it 'similar' to MooTyper. Added grade Remove capability from View all gra
 opens the gview.php file. Had to add the attrem.php file to get Remove to work.
 02/22/2019 Add the three links, Add new exercise / category, Import lesson / KB layout, and
 Export / edit exercises, to the Roshine edit menu.
+
+02/26/2019 Created git repository.
