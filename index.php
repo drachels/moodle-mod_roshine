@@ -16,13 +16,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This is a one-line short description of the file
+ * This will list all the Roshine activities in a course and is
+ * accessed from an Activities block.
  *
- * You can have a rather longer description of the file as well,
- * if you like, and it can span multiple lines.
- *
- * @package    mod
- * @subpackage roshine
+ * @package    mod_roshine
+ * @copyright  2012 Jaka Luthar (jaka.luthar@gmail.com)
+ * @copyright  2016 onwards AL Rachels (drachels@drachels.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +36,7 @@ require_course_login($course);
 
 add_to_log($course->id, 'roshine', 'view all', 'index.php?id='.$course->id, '');
 
-$coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+$coursecontext = context_course::instance($course->id);
 
 $PAGE->set_url('/mod/roshine/index.php', array('id' => $id));
 $PAGE->set_title(format_string($course->fullname));

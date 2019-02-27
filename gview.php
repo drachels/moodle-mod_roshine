@@ -19,8 +19,9 @@
  *
  * It is also possible to remove the results of any individual attempt.
  *
- * @package    mod_roshiner
+ * @package    mod_roshine
  * @copyright  2012 Jaka Luthar (jaka.luthar@gmail.com)
+ * @copyright  2016 onwards AL Rachels (drachels@drachels.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,8 +31,8 @@ require_once(dirname(__FILE__).'/locallib.php');
 
 global $USER;
 
-$id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // roshine instance ID - it should be named as the first character of the module
+$id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
+$n  = optional_param('n', 0, PARAM_INT);  // roshine instance ID - it should be named as the first character of the module.
 $se = optional_param('exercise', 0, PARAM_INT);
 $md = optional_param('jmode', 0, PARAM_INT);
 $us = optional_param('juser', 0, PARAM_INT);
@@ -53,10 +54,7 @@ if ($id) {
 } else {
     error('You must specify a course_module ID or an instance ID');
 }
-
-
-
-
+$mtmode = $roshine->isexam;
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 
@@ -73,19 +71,25 @@ if (!has_capability('mod/roshine:viewgrades', context_module::instance($cm->id))
     echo $OUTPUT->header();
     echo $OUTPUT->heading($roshine->name);
     $htmlout = '';
-    $htmlout .= '<div align="center" style="font-size:20px;font-weight:bold;background:#CCC;border:2px solid #8eb6d8;-webkit-border-radius:16px;-moz-border-radius:16px;border-radius:16px;">';
+    $htmlout .= '<div align="center" style="font-size:20px;
+                font-weight:bold;background:#CCC;
+                border:2px solid #8eb6d8;
+                -webkit-border-radius:16px;
+                -moz-border-radius:16px;
+                border-radius:16px;">';
 
     if ($roshine->isexam) {
         $grds = ros_get_typergradesfull($_GET['n']);
-        if ($grds != FALSE) {
-            $htmlout .= '<table style="border-style: solid;"><tr><td>'.
-                get_string('student', 'roshine').'</td><td>'.
-                get_string('vmistakes', 'roshine').'</td><td>'.
-                get_string('timeinseconds', 'roshine').'</td><td>'.
-                get_string('hitsperminute', 'roshine').'</td><td>'.
-                get_string('fullhits', 'roshine').
-                '</td><td>'.get_string('precision', 'roshine').
-                '</td><td>'.get_string('timetaken', 'roshine').'</td></tr>';
+        if ($grds != false) {
+            $htmlout .= '<table style="border-style: solid;"><tr>
+                        <td>'.get_string('student', 'roshine').'</td>
+                        <td>'.get_string('vmistakes', 'roshine').'</td>
+                        <td>'.get_string('timeinseconds', 'roshine').'</td>
+                        <td>'.get_string('hitsperminute', 'roshine').'</td>
+                        <td>'.get_string('fullhits', 'roshine').'</td>
+                        <td>'.get_string('precision', 'roshine').'</td>
+                        <td>'.get_string('timetaken', 'roshine').'</td>
+                        <td></td></tr>';
             foreach ($grds as $gr) {
                 if ($gr->ros_suspicion) {
                     $klicaj = '<span style="color: red;">!!!!!</span>';
@@ -93,20 +97,21 @@ if (!has_capability('mod/roshine:viewgrades', context_module::instance($cm->id))
                     $klicaj = '';
                 }
 
-                $removelnk = '<a href="'.$CFG->wwwroot . '/mod/roshine/attrem.php?c_id='.optional_param('id', 0, PARAM_INT)
+                $removelnk = '<a href="'.$CFG->wwwroot . '/mod/roshine/attrem.php?c_id='
+                             .optional_param('id', 0, PARAM_INT)
                              .'&m_id='.optional_param('n', 0, PARAM_INT).'&g='.$gr->id.'">'
                              .get_string('eremove', 'roshine').'</a>';
-
-            $htmlout .= '<tr style="border-top-style: solid;">
-                <td>'.$klicaj.' '.$gr->firstname.' '
-                .$gr->lastname.'</td><td>'
-                .$gr->mistakes.'</td><td>'.
-                $gr->timeinseconds.' s</td><td>'
-                .$gr->hitsperminute.'</td><td>'
-                .$gr->fullhits.'</td><td>'
-                .$gr->precisionfield.'%</td><td>'
-                .date('d. M Y G:i', $gr->timetaken).'</td><td>'
-                .$removelnk.'</td></tr>';
+                $namelnk = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.$gr->u_id.'&amp;course='
+                           .$course->id.'">'.$gr->firstname.' '.$gr->lastname.'</a>';
+                $htmlout .= '<tr style="border-top-style: solid;">
+                            <td>'.$klicaj.' '.$namelnk.'</td>
+                            <td>'.$gr->mistakes.'</td>
+                            <td>'.$gr->timeinseconds.' s</td>
+                            <td>'.$gr->hitsperminute.'</td>
+                            <td>'.$gr->fullhits.'</td>
+                            <td>'.$gr->precisionfield.'%</td>
+                            <td>'.date('d. M Y G:i', $gr->timetaken).'</td>
+                            <td>'.$removelnk.'</td></tr>';
 
                 // Get the information to draw the chart for this exam.
                 $labels[] = $gr->firstname.' '.$gr->lastname.' Ex-'.$gr->exercisename;  // This gets the exercise number.
@@ -141,7 +146,7 @@ else
         $htmlout .= '<tr><td>'.get_string('student', 'roshine').'</td><td>';
         $htmlout .= '<select name="juser" onchange="this.form.submit()">';
         $htmlout .= '<option value="0">'.get_string('allstring', 'roshine').'</option>';
-        if($usrs != FALSE)    
+        if($usrs != false)    
             foreach($usrs as $x)
             {
                 if($us == $x->id)
@@ -169,37 +174,57 @@ else
         $htmlout .= '</td></tr>';        
     }
     $grds = ros_get_typer_grades_adv($roshine->id, $se, $us);
-    if($grds != FALSE){
-        $htmlout .= '<table style="border-style: solid;"><tr><td>'.get_string('student', 'roshine').'</td><td>'.
-        get_string('fexercise', 'roshine').'</td><td>'.get_string('vmistakes', 'roshine').'</td><td>'.
-        get_string('timeinseconds', 'roshine').'</td><td>'.get_string('hitsperminute', 'roshine').'</td><td>'.
-        get_string('fullhits', 'roshine').'</td><td>'.get_string('precision', 'roshine').'</td><td>'.
-        get_string('timetaken', 'roshine').'</td></tr>';
+    if ($grds != false) {
+        $htmlout .= '<table style="border-style: solid;"><tr>
+                    <td>'.get_string('student', 'roshine').'</td>
+                    <td>'.get_string('fexercise', 'roshine').'</td>
+                    <td>'.get_string('vmistakes', 'roshine').'</td>
+                    <td>'.get_string('timeinseconds', 'roshine').'</td>
+                    <td>'.get_string('hitsperminute', 'roshine').'</td>
+                    <td>'.get_string('fullhits', 'roshine').'</td>
+                    <td>'.get_string('precision', 'roshine').'</td>
+                    <td>'.get_string('timetaken', 'roshine').'</td></tr>';
         foreach ($grds as $gr) {
-            if($gr->ros_suspicion)
+            if ($gr->ros_suspicion) {
                 $klicaj = '<span style="color: red;">!!!!!</span>';
-            else
+            } else {
                 $klicaj = '';
-            if($gr->pass)
+            }
+            if ($gr->pass) {
                 $stil = 'background-color: #7FEF6C;';
-            else
+            } else {
                 $stil = 'background-color: #FF6C6C;';
-            $htmlout .= '<tr style="border-top-style: solid;'.$stil.'"><td>'.$klicaj.' '.$gr->firstname.' '.$gr->lastname.'</td><td>'.$gr->exercisename.'</td><td>'.$gr->mistakes.'</td><td>'.
-            $gr->timeinseconds.' s</td><td>'.$gr->hitsperminute.'</td><td>'.$gr->fullhits.'</td><td>'.$gr->precisionfield.'%</td><td>'.date('d. M Y G:i', $gr->timetaken).'</td></tr>';
+            }
+            $htmlout .= '<tr style="border-top-style: solid;'.$stil.'">
+                        <td>'.$klicaj.' '.$gr->firstname.' '.$gr->lastname.'</td>
+                        <td>'.$gr->exercisename.'</td>
+                        <td>'.$gr->mistakes.'</td>
+                        <td>'.$gr->timeinseconds.' s</td>
+                        <td>'.$gr->hitsperminute.'</td>
+                        <td>'.$gr->fullhits.'</td>
+                        <td>'.$gr->precisionfield.'%</td>
+                        <td>'.date('d. M Y G:i', $gr->timetaken).'</td></tr>';
 
-                // Get information to draw the chart for all exercises in this lesson.
-                $labels[] = $gr->firstname.' '.$gr->lastname.' Ex-'.$gr->exercisename;  // This gets the exercise number.
-                $serieshitsperminute[] = format_float($gr->hitsperminute); // Get the hits per minute value.
-                $seriesprecision[] = format_float($gr->precisionfield);  // Get the precision percentage value.
-                // $serieswpm[] = $gr->wpm; // Get the corrected words per minute rate.
+            // Get information to draw the chart for all exercises in this lesson.
+            $labels[] = $gr->firstname.' '.$gr->lastname.' Ex-'.$gr->exercisename;  // This gets the exercise number.
+            $serieshitsperminute[] = format_float($gr->hitsperminute); // Get the hits per minute value.
+            $seriesprecision[] = format_float($gr->precisionfield);  // Get the precision percentage value.
+            // $serieswpm[] = $gr->wpm; // Get the corrected words per minute rate.
 
         }
         $avg = ros_get_grades_avg($grds);
-        $htmlout .= '<tr style="border-top-style: solid;"><td><strong>'.get_string('average', 'roshine').': </strong></td><td>&nbsp;</td><td>'.$avg['mistakes'].'</td><td>'.$avg['timeinseconds'].' s</td><td>'.$avg['hitsperminute'].'</td><td>'.$avg['fullhits'].'</td><td>'.$avg['precisionfield'].'%</td><td></td></tr>';
+        $htmlout .= '<tr style="border-top-style: solid;">
+                    <td><strong>'.get_string('average', 'roshine').': </strong></td>
+                    <td>&nbsp;</td><td>'.$avg['mistakes'].'</td>
+                    <td>'.$avg['timeinseconds'].' s</td>
+                    <td>'.$avg['hitsperminute'].'</td>
+                    <td>'.$avg['fullhits'].'</td>
+                    <td>'.$avg['precisionfield'].'%</td>
+                    <td></td></tr>';
         $htmlout .= '</table>';
-    }
-    else
+    } else {
         echo get_string('nogrades', 'roshine');
+    }
     $htmlout .= '</table>';
     $htmlout .= '</form>';
 }

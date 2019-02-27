@@ -15,33 +15,61 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of roshine setup
+ * Shows the setup of a particular instance of roshine setup.
+ * You can set whether this instance is a lesson or exam,
+ * select the exercise category, required precision, as
+ * well as which keyboard to show and use.
  *
- * @package    mod
- * @subpackage roshine
+ * @package    mod_roshine
+ * @copyright  2012 Jaka Luthar (jaka.luthar@gmail.com)
+ * @copyright  2016 onwards AL Rachels (drachels@drachels.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-global $USER;
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 require_once(dirname(__FILE__).'/locallib.php');
 
-$id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // roshine instance ID - it should be named as the first character of the module
-$mooCFG = get_config('roshine');
-if(isset($_POST['button']))
-$param1 = $_POST['button'];
-if(isset($param1) && get_string('fconfirm', 'roshine') == $param1)
-{
-    $modePO = optional_param('mode', null, PARAM_INT);
+global $USER;
+
+
+$id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
+$n  = optional_param('n', 0, PARAM_INT);  // Roshine instance ID - it should be named as the first character of the module.
+
+if ($id) {
+    $cm         = get_coursemodule_from_id('roshine', $id, 0, false, MUST_EXIST);
+    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    $roshine    = $DB->get_record('roshine', array('id' => $cm->instance), '*', MUST_EXIST);
+} else if ($n) {
+    $roshine    = $DB->get_record('roshine', array('id' => $n), '*', MUST_EXIST);
+    $course     = $DB->get_record('course', array('id' => $roshine->course), '*', MUST_EXIST);
+    $cm         = get_coursemodule_from_instance('roshine', $roshine->id, $course->id, false, MUST_EXIST);
+} else {
+    error('You must specify a course_module ID or an instance ID');
+}
+require_login($course, true, $cm);
+$context = context_module::instance($cm->id);
+
+// Get the default config for Roshine.
+$roscfg = get_config('roshine');
+// Enable-disable flag.
+$epo = optional_param('e', 0, PARAM_INT);
+// Get settings for current roshine activity.
+
+
+// Will need to remove the next three lines.
+//if (isset($_POST['button'])) {
+//    $param1 = $_POST['button'];
+//}
+if (isset($param1) && get_string('fconfirm', 'roshine') == $param1) {
+
+    $modepo = optional_param('mode', null, PARAM_INT);
     $lessonpo = optional_param('lesson', null, PARAM_INT);
-    //$mooCFG = get_config('roshine');
-    //$defLayout = $mooCFG->defaultlayout;
+    //$roscfg = get_config('roshine');
+    //$defLayout = $roscfg->defaultlayout;
     
-    $goalPO = optional_param('requiredgoal', $mooCFG->defaultprecision, PARAM_INT);
-    if($goalPO == 0) $goalPO = $mooCFG->defaultprecision;
+    $goalPO = optional_param('requiredgoal', $roscfg->defaultprecision, PARAM_INT);
+    if($goalPO == 0) $goalPO = $roscfg->defaultprecision;
     $layoutPO = optional_param('layout', 0, PARAM_INT);
     $showKeyboardPO = optional_param('showkeyboard', null, PARAM_CLEAN);
     global $DB, $CFG;
@@ -49,9 +77,9 @@ if(isset($param1) && get_string('fconfirm', 'roshine') == $param1)
     $roshine->lesson = $lessonpo;
     $roshine->showkeyboard = $showKeyboardPO == 'on';
     $roshine->layout = $layoutPO;
-    $roshine->isexam = $modePO;
+    $roshine->isexam = $modepo;
     $roshine->requiredgoal = $goalPO;
-    if($modePO == 1){
+    if($modepo == 1){
         $exercisePO = optional_param('exercise', null, PARAM_INT);
         $roshine->exercise = $exercisePO;
     }
@@ -59,12 +87,12 @@ if(isset($param1) && get_string('fconfirm', 'roshine') == $param1)
     header('Location: '.$CFG->wwwroot.'/mod/roshine/view.php?n='.$n);
 }
 
-$modePO = optional_param('mode', null, PARAM_INT);
+$modepo = optional_param('mode', null, PARAM_INT);
 $exercisePO = optional_param('exercise', null, PARAM_INT);
 $lessonpo = optional_param('lesson', null, PARAM_INT);
 $showKeyboardPO = optional_param('showkeyboard', null, PARAM_CLEAN);
 $layoutPO = optional_param('layout', 0, PARAM_INT);
-$goalPO = optional_param('requiredgoal', $mooCFG->defaultprecision, PARAM_INT);
+$goalPO = optional_param('requiredgoal', $roscfg->defaultprecision, PARAM_INT);
 
 if ($id) {
     $cm         = get_coursemodule_from_id('roshine', $id, 0, false, MUST_EXIST);
@@ -121,7 +149,7 @@ if (has_capability('mod/roshine:editall', context_course::instance($course->id))
 } else {
     $lessons = get_roshinelessons($USER->id, $course->id);
 }
-if ($modePO == 0 || is_null($modePO)) {
+if ($modepo == 0 || is_null($modepo)) {
     $htmlout .= '<option selected="true" value="0">'.
             get_string('sflesson', 'roshine').'</option><option value="1">'.
             get_string('isexamtext', 'roshine').'</option>';
@@ -135,20 +163,18 @@ if ($modePO == 0 || is_null($modePO)) {
         }
     }
     $htmlout .= '</select></td></tr><tr><td>'.get_string('requiredgoal', 'roshine').'</td><td><input value="'.$goalPO.'" style="width: 40px;" type="text" name="requiredgoal"> % </td></tr>';
-}
-else if($modePO == 1)
-{
+} else if($modepo == 1) {
     $htmlout .= '<option value="0">'.
             get_string('sflesson', 'roshine').'</option><option value="1" selected="true">'.
             get_string('isexamtext', 'roshine').'</option>';
     $htmlout .= '</select></td></tr><tr><td>';
     $htmlout .= get_string('flesson', 'roshine').'</td><td><select onchange="this.form.submit()" name="lesson">';
-    for($ij=0; $ij<count($lessons); $ij++)
-    {
-        if($lessons[$ij]['id'] == $lessonpo)
+    for ($ij=0; $ij<count($lessons); $ij++) {
+        if ($lessons[$ij]['id'] == $lessonpo) {
             $htmlout .= '<option selected="true" value="'.$lessons[$ij]['id'].'">'.$lessons[$ij]['lessonname'].'</option>';
-        else
+        } else {
             $htmlout .= '<option value="'.$lessons[$ij]['id'].'">'.$lessons[$ij]['lessonname'].'</option>';
+        }
     }
     $htmlout .= '</select></td></tr>';
     $exercises = ros_get_exercises_by_lesson($lessonpo);
@@ -167,7 +193,7 @@ if($showKeyboardPO == 'on'){
     $htmlout .= '<input type="checkbox" checked="checked" onchange="this.form.submit()" name="showkeyboard">';
     $layouts = ros_get_keyboard_layouts_db();
     //$mform->addElement('select', 'layout', get_string('layout', 'roshine'), $layouts);
-    $defLayout = $mooCFG->defaultlayout;
+    $defLayout = $roscfg->defaultlayout;
     $htmlout .= '<tr><td>'.get_string('layout', 'roshine').'</td><td><select name="layout">';
     foreach($layouts as $lkey => $lval)
     {
@@ -188,8 +214,9 @@ $htmlout .= '</table>';
 $htmlout .= '<br><input name="button" value="'.get_string('fconfirm', 'roshine').'" type="submit">';
 $htmlout .= '</form>';
 $htmlout .= '</div>';
+// Finally show the complete page.
 echo $htmlout;
-// Ket Thuc Trang
+// Finish the page by adding a footer.
 echo $OUTPUT->footer();
 
 

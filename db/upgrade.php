@@ -123,78 +123,154 @@ function xmldb_roshine_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2007040101, 'roshine');
     }
 
-    if($oldversion < 2013012100) {
-		$table = new xmldb_table('roshine_grades');
+    if ($oldversion < 2013012100) {
+        $table = new xmldb_table('roshine_grades');
         $field = new xmldb_field('wpm', XMLDB_TYPE_NUMBER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'attemptid');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
         upgrade_mod_savepoint(true, 2013012100, 'roshine');
-	}
+    }
 
     // New field usepassword added after timeclose for version 3.1.2.
     if ($oldversion < 2016080700) {
+
         // Define field usepassword to be added to roshine.
         $table = new xmldb_table('roshine');
         $field = new xmldb_field('usepassword', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'timeclose');
+
         // Conditionally launch add field usepassword.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        // roshine savepoint reached.
+
+        // Roshine savepoint reached.
         upgrade_mod_savepoint(true, 2016080700, 'roshine');
     }
 
     // New field continuoustyping added after showkeyboard for version 3.1.4.
     if ($oldversion < 2017060400.2) {
+
         // Define field continuoustype to be added to roshine.
         $table = new xmldb_table('roshine');
         $field = new xmldb_field('continuoustype', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'showkeyboard');
+
         // Conditionally launch add field continuoustype.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        // roshine savepoint reached.
+
+        // Roshine savepoint reached.
         upgrade_mod_savepoint(true, 2017060400.2, 'roshine');
     }
+
     // New field countmistypedspaces added after continuoustype for version 3.3.0.
     if ($oldversion < 2017090200) {
+
         // Define field countmistypedspaces to be added to roshine.
         $table = new xmldb_table('roshine');
         $field = new xmldb_field('countmistypedspaces', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'continuoustype');
+
         // Conditionally launch add field countmistypedspaces.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        // roshine savepoint reached.
+
+        // Roshine savepoint reached.
         upgrade_mod_savepoint(true, 2017090200, 'roshine');
     }
 
     // Three new fields added after countmistypedspaces for version 3.4.1.
     if ($oldversion < 2017120100) {
-        // Define field statsbgc to be added to mootyper.
-        $table = new xmldb_table('mootyper');
+
+        // Define field statsbgc to be added to roshine.
+        $table = new xmldb_table('roshine');
         $field = new xmldb_field('statsbgc', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'countmistypedspaces');
+
         // Conditionally launch add field statsbgc.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        // Define field keytopbgc to be added to mootyper.
-        $table = new xmldb_table('mootyper');
+
+        // Define field keytopbgc to be added to roshine.
+        $table = new xmldb_table('roshine');
         $field = new xmldb_field('keytopbgc', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'statsbgc');
+
         // Conditionally launch add field keytopbgc.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        // Define field keybdbgc to be added to mootyper.
-        $table = new xmldb_table('mootyper');
+
+        // Define field keybdbgc to be added to roshine.
+        $table = new xmldb_table('roshine');
         $field = new xmldb_field('keybdbgc', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'keytopbgc');
+
         // Conditionally launch add field keybdbgc.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        // Mootyper savepoint reached.
-        upgrade_mod_savepoint(true, 2017120100, 'mootyper');
+
+        // Roshine savepoint reached.
+        upgrade_mod_savepoint(true, 2017120100, 'roshine');
+    }
+
+    // One new field added after keybdbgc for version 3.4.3.
+    if ($oldversion < 2018021100.5) {
+
+        // Define field textalign to be added to roshine.
+        $table = new xmldb_table('roshine');
+        $field = new xmldb_field('textalign', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'keybdbgc');
+
+        // Conditionally launch add field statsbgc.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Roshine savepoint reached.
+        upgrade_mod_savepoint(true, 2018021100.5, 'roshine');
+    }
+
+    // Four new fields added after textalign for version 3.5.0.
+    if ($oldversion < 2018033000) {
+
+        // Define field cursorcolor to be added to roshine.
+        $table = new xmldb_table('roshine');
+        $field = new xmldb_field('cursorcolor', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'textalign');
+
+        // Conditionally launch add field cursorcolor.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field textbgc to be added to roshine.
+        $table = new xmldb_table('roshine');
+        $field = new xmldb_field('textbgc', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'cursorcolor');
+
+        // Conditionally launch add field textbgc.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field texterrorcolor to be added to roshine.
+        $table = new xmldb_table('roshine');
+        $field = new xmldb_field('texterrorcolor', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'textbgc');
+
+        // Conditionally launch add field texterrorcolor.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Roshine savepoint reached.
+        upgrade_mod_savepoint(true, 2018033000, 'roshine');
+
+        // Define field countmistakes to be added to roshine.
+        $table = new xmldb_table('roshine');
+        $field = new xmldb_field('countmistakes', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'texterrorcolor');
+
+        // Conditionally launch add field countmistakes.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
