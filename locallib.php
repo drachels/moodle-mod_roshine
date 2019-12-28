@@ -172,7 +172,7 @@ function ros_can_view_edit_all($usr, $c) {
  * @param int $lsn
  * @return boolean
  */
-function rosiseditablebyme($usr, $lsn) {
+function rosiseditablebyme($usr, $id, $lsn) {
     global $DB;
     $lesson = $DB->get_record('roshine_lessons', array('id' => $lsn));
     if (is_null($lesson->courseid)) {
@@ -180,9 +180,9 @@ function rosiseditablebyme($usr, $lsn) {
     } else {
         $crs = $lesson->courseid;
     }
-    if ((($lesson->editable == 0) ||
-        ($lesson->editable == 1 && ros_is_user_enrolled($usr, $crs)) ||
-        ($lesson->editable == 2 && $lesson->authorid == $usr))
+    if ((($lesson->editable == 0)
+        || ($lesson->editable == 1 && (ros_is_user_enrolled($usr, $id) && ($id == $lesson->courseid)))
+        || ($lesson->editable == 2 && $lesson->authorid == $usr))
         || ros_can_view_edit_all($usr, $crs)) {
         return true;
     } else {
@@ -190,9 +190,9 @@ function rosiseditablebyme($usr, $lsn) {
     }
 }
 
-/**
- * Very different to MooTyper 3.3
- * Need to check and test!
+/** 3/22/16 Modified Where clause. Previously, it was comparing a
+ * course number to modifierid which was never going to match
+ * except in the very rare case of being in course 2 in all of my Moodles.
  *
  * Check to see if user is enrolled in current course.
  * @param int $usr
@@ -202,7 +202,7 @@ function rosiseditablebyme($usr, $lsn) {
 function ros_is_user_enrolled($usr, $crs) {
     global $DB, $CFG;
     $sql2 = "SELECT * FROM ".$CFG->prefix."user_enrolments
-             WHERE userid = ".$usr." AND modifierid = ".$crs;
+             WHERE userid = ".$usr;
     $enrolls = $DB->get_records_sql($sql2, array());
     $rt = count($enrolls) > 0 ? 1 : 0;
     return $rt;

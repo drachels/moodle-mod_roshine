@@ -47,52 +47,140 @@ defined('MOODLE_INTERNAL') || die();
  */
 function roshine_supports($feature) {
     switch($feature) {
-        case FEATURE_MOD_INTRO:         return true;
-        default:                        return null;
+        case FEATURE_GROUPS;
+            return false;
+        case FEATURE_GROUPINGS:
+            return false;
+        case FEATURE_GROUPMEMBERSONLY:
+            return false;
+        case FEATURE_MOD_INTRO:
+            return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return true;
+        case FEATURE_COMPLETION_HAS_RULES:
+            return true;
+        case FEATURE_GRADE_HAS_GRADE:
+            return false;
+        case FEATURE_GRADE_OUTCOMES:
+            return false;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
+
+        default:
+            return null;
     }
 }
 
-function ros_get_users_of_one_instance($roshineID)
+/**
+ * Get users for this Roshine.
+ *
+ * @param int $roshinerid
+ * @return array, false if none.
+ */
+function ros_get_users_of_one_instance($roshineid)
 {
     global $DB, $CFG;
     $params = array();
-    $toReturn = array();
-    $gradesTblName = $CFG->prefix."roshine_grades";
-    $usersTblName = $CFG->prefix."user";
-    $sql = "SELECT DISTINCT ".$usersTblName.".firstname, ".$usersTblName.".lastname, ".$usersTblName.".id".
-    " FROM ".$gradesTblName.
-    " LEFT JOIN ".$usersTblName." ON ".$gradesTblName.".userid = ".$usersTblName.".id".
-    " WHERE (roshine=".$roshineID.")";
+    $toreturn = array();
+    $gradestblname = $CFG->prefix."roshine_grades";
+    $userstblname = $CFG->prefix."user";
+    $sql = "SELECT DISTINCT ".$userstblname.".firstname, ".$userstblname.".lastname, ".$userstblname.".id".
+    " FROM ".$gradestblname.
+    " LEFT JOIN ".$userstblname." ON ".$gradestblname.".userid = ".$userstblname.".id".
+    " WHERE (roshine=".$roshineid.")";
     if ($grades = $DB->get_records_sql($sql, $params)) {
         return $grades;
     }
-    return FALSE;
+    return false;
 }
 
-function ros_get_typer_grades_adv($roshineID, $exerciseID, $userID=0)
-{
+/**
+ * Get grades for users for this Roshine.
+ *
+ * @param int $roshinerid
+ * @param int $exerciseid
+ * @param int $userid
+ * @param int $orderby
+ * @param int $desc
+ * @return array, false if none.
+ */
+function ros_get_typer_grades_adv($roshineid, $exerciseid, $userid=0, $orderby=-1, $desc=false) {
     global $DB, $CFG;
     $params = array();
-    $toReturn = array();
-    $gradesTblName = $CFG->prefix."roshine_grades";
-    $usersTblName = $CFG->prefix."user";
-    $exerTblName = $CFG->prefix."roshine_exercises";
-    $attTblName = $CFG->prefix."roshine_attempts";
-    $sql = "SELECT ".$gradesTblName.".id, ".$usersTblName.".firstname, ".$usersTblName.".lastname, ".$gradesTblName.".pass, ".
-    $gradesTblName.".mistakes, ".$gradesTblName.".timeinseconds, ".$gradesTblName.".hitsperminute, ".$attTblName.".ros_suspicion, ".
-    $gradesTblName.".fullhits, ".$gradesTblName.".precisionfield, ".$gradesTblName.".timetaken, ".$exerTblName.".exercisename".
-    " FROM ".$gradesTblName.
-    " LEFT JOIN ".$usersTblName." ON ".$gradesTblName.".userid = ".$usersTblName.".id".
-    " LEFT JOIN ".$exerTblName." ON ".$gradesTblName.".exercise = ".$exerTblName.".id".
-    " LEFT JOIN ".$attTblName." ON ".$attTblName.".id = ".$gradesTblName.".attemptid".
-    " WHERE (roshine=".$roshineID.") AND (exercise=".$exerciseID." OR ".$exerciseID."=0) AND".
-    " (".$gradesTblName.".userid=".$userID." OR ".$userID."=0)";
+    $toreturn = array();
+    $gradestblname = $CFG->prefix."roshine_grades";
+    $userstblname = $CFG->prefix."user";
+    $exertblname = $CFG->prefix."roshine_exercises";
+    $atttblname = $CFG->prefix."roshine_attempts";
+    $sql = "SELECT ".$gradestblname.".id, "
+                    .$userstblname.".firstname, "
+                    .$userstblname.".lastname, "
+                    .$userstblname.".id as u_id, "
+                    .$gradestblname.".pass, "
+                    .$gradestblname.".mistakes, "
+                    .$gradestblname.".timeinseconds, "
+                    .$gradestblname.".hitsperminute, "
+                    .$atttblname.".ros_suspicion, "
+                    .$gradestblname.".fullhits, "
+                    .$gradestblname.".precisionfield, "
+                    .$gradestblname.".timetaken, "
+                    .$exertblname.".exercisename, "
+                    .$gradestblname.".wpm".
+    " FROM ".$gradestblname.
+    " LEFT JOIN ".$userstblname." ON ".$gradestblname.".userid = ".$userstblname.".id".
+    " LEFT JOIN ".$exertblname." ON ".$gradestblname.".exercise = ".$exertblname.".id".
+    " LEFT JOIN ".$atttblname." ON ".$atttblname.".id = ".$gradestblname.".attemptid".
+    " WHERE (roshine=".$roshineid.") AND (exercise=".$exerciseid." OR ".$exerciseid."=0) AND".
+    " (".$gradestblname.".userid=".$userid." OR ".$userid."=0)";
+    if ($orderby == 0 || $orderby == -1) {
+        $oby = " ORDER BY ".$gradestblname.".id";
+    } else if ($orderby == 1) {
+        $oby = " ORDER BY ".$userstblname.".firstname";
+    } else if ($orderby == 2) {
+        $oby = " ORDER BY ".$userstblname.".lastname";
+    } else if ($orderby == 3) {
+        $oby = " ORDER BY ".$atttblname.".ros_suspicion";
+    } else if ($orderby == 4) {
+        $oby = " ORDER BY ".$gradestblname.".mistakes";
+    } else if ($orderby == 5) {
+        $oby = " ORDER BY ".$gradestblname.".timeinseconds";
+    } else if ($orderby == 6) {
+        $oby = " ORDER BY ".$gradestblname.".hitsperminute";
+    } else if ($orderby == 7) {
+        $oby = " ORDER BY ".$gradestblname.".fullhits";
+    } else if ($orderby == 8) {
+        $oby = " ORDER BY ".$gradestblname.".precisionfield";
+    } else if ($orderby == 9) {
+        $oby = " ORDER BY ".$gradestblname.".timetaken";
+    } else if ($orderby == 10) {
+        $oby = " ORDER BY ".$exertblname.".exercisename";
+    } else if ($orderby == 11) {
+        $oby = " ORDER BY ".$gradestblname.".pass";
+    } else if ($orderby == 12) {
+        $oby = " ORDER BY ".$gradestblname.".wpm";
+    } else {
+        $oby = "";
+    }
+    $sql .= $oby;
+    if ($desc) {
+        $sql .= " DESC";
+    }
     if ($grades = $DB->get_records_sql($sql, $params)) {
         return $grades;
     }
-    return FALSE;
+    return false;
 }
 
+/**
+ * Get averages for users for this Roshine.
+ *
+ * @param int $grads
+ * @return array.
+ */
 function ros_get_grades_average($grads)
 {
     $povprecje = array();
@@ -113,30 +201,149 @@ function ros_get_grades_average($grads)
     return $povprecje;
 }
 
-function ros_get_typergradesfull($s_id) {
+/**
+ * Get grades for all users.
+ *
+ * @param int $sid
+ * @param int $orderby
+ * @param int $desc
+ * @return array, false if null.
+ */
+function ros_get_typergradesfull($sid, $orderby=-1, $desc=false) {
     global $DB, $CFG;
     $params = array();
-    $toReturn = array();
-    $gradesTblName = $CFG->prefix."roshine_grades";
-    $usersTblName = $CFG->prefix."user";
-    $exerTblName = $CFG->prefix."roshine_exercises";
-    $attTblName = $CFG->prefix."roshine_attempts";
-    $sql = "SELECT ".$gradesTblName.".id, ".$usersTblName.".firstname, ".$usersTblName.".lastname, ".$attTblName.".ros_suspicion, ".
-    $gradesTblName.".mistakes, ".$gradesTblName.".timeinseconds, ".$gradesTblName.".hitsperminute, ".
-    $gradesTblName.".fullhits, ".$gradesTblName.".precisionfield, ".$gradesTblName.".timetaken, ".$exerTblName.".exercisename, ".
-    $attTblName.".ros_suspicion".
-    " FROM ".$gradesTblName.
-    " LEFT JOIN ".$usersTblName." ON ".$gradesTblName.".userid = ".$usersTblName.".id".
-    " LEFT JOIN ".$exerTblName." ON ".$gradesTblName.".exercise = ".$exerTblName.".id".
-    " LEFT JOIN ".$attTblName." ON ".$attTblName.".id = ".$gradesTblName.".attemptid".
-    " WHERE roshine=".$s_id;
+    $toreturn = array();
+    $gradestblname = $CFG->prefix."roshine_grades";
+    $userstblname = $CFG->prefix."user";
+    $exertblname = $CFG->prefix."roshine_exercises";
+    $atttblname = $CFG->prefix."roshine_attempts";
+    $sql = "SELECT ".$gradestblname.".id, "
+                    .$userstblname.".firstname, "
+                    .$userstblname.".lastname, "
+                    .$userstblname.".id as u_id, "
+                    .$gradestblname.".pass, "
+                    .$atttblname.".ros_suspicion, "
+                    .$gradestblname.".mistakes, "
+                    .$gradestblname.".timeinseconds, "
+                    .$gradestblname.".hitsperminute, "
+                    .$gradestblname.".fullhits, "
+                    .$gradestblname.".precisionfield, "
+                    .$gradestblname.".timetaken, "
+                    .$exertblname.".exercisename, "
+                    .$gradestblname.".wpm".
+    " FROM ".$gradestblname.
+    " LEFT JOIN ".$userstblname." ON ".$gradestblname.".userid = ".$userstblname.".id".
+    " LEFT JOIN ".$exertblname." ON ".$gradestblname.".exercise = ".$exertblname.".id".
+    " LEFT JOIN ".$atttblname." ON ".$atttblname.".id = ".$gradestblname.".attemptid".
+    " WHERE roshine=".$sid;
+    if ($orderby == 0 || $orderby == -1) {
+        $oby = " ORDER BY ".$gradestblname.".id";
+    } else if ($orderby == 1) {
+        $oby = " ORDER BY ".$userstblname.".firstname";
+    } else if ($orderby == 2) {
+        $oby = " ORDER BY ".$userstblname.".lastname";
+    } else if ($orderby == 3) {
+        $oby = " ORDER BY ".$atttblname.".ros_suspicion";
+    } else if ($orderby == 4) {
+        $oby = " ORDER BY ".$gradestblname.".mistakes";
+    } else if ($orderby == 5) {
+        $oby = " ORDER BY ".$gradestblname.".timeinseconds";
+    } else if ($orderby == 6) {
+        $oby = " ORDER BY ".$gradestblname.".hitsperminute";
+    } else if ($orderby == 7) {
+        $oby = " ORDER BY ".$gradestblname.".fullhits";
+    } else if ($orderby == 8) {
+        $oby = " ORDER BY ".$gradestblname.".precisionfield";
+    } else if ($orderby == 9) {
+        $oby = " ORDER BY ".$gradestblname.".timetaken";
+    } else if ($orderby == 10) {
+        $oby = " ORDER BY ".$exertblname.".exercisename";
+    } else if ($orderby == 12) {
+        $oby = " ORDER BY ".$gradestblname.".wpm";
+    } else {
+        $oby = "";
+    }
+    $sql .= $oby;
+    if ($desc) {
+        $sql .= " DESC";
+    }
     if ($grades = $DB->get_records_sql($sql, $params)) {
         return $grades;
     }
-    return FALSE;
-    //select Message.ID, Message.FromUser, User.PhoneNum, User.Nick, Message.Contents, Message.Type from Message left join User on Message.FromUser = User.ID where Message.ID=".$msgID"
+    return false;
 }
 
+/**
+ * Get grades for one user.
+ *
+ * @param int $sid
+ * @param int $uid
+ * @param int $orderby
+ * @param int $desc
+ * @return array, false if null.
+ */
+function ros_get_typergradesuser($sid, $uid, $orderby=-1, $desc=false) {
+    global $DB, $CFG;
+    $params = array();
+    $toreturn = array();
+    $gradestblname = $CFG->prefix."roshine_grades";
+    $userstblname = $CFG->prefix."user";
+    $exertblname = $CFG->prefix."roshine_exercises";
+    $atttblname = $CFG->prefix."roshine_attempts";
+    $sql = "SELECT ".$gradestblname.".id, "
+                    .$userstblname.".firstname, "
+                    .$userstblname.".lastname, "
+                    .$atttblname.".ros_suspicion, "
+                    .$gradestblname.".mistakes, "
+                    .$gradestblname.".timeinseconds, "
+                    .$gradestblname.".hitsperminute, "
+                    .$gradestblname.".fullhits, "
+                    .$gradestblname.".precisionfield, "
+                    .$gradestblname.".pass, "
+                    .$gradestblname.".timetaken, "
+                    .$exertblname.".exercisename, "
+                    .$gradestblname.".wpm".
+    " FROM ".$gradestblname.
+    " LEFT JOIN ".$userstblname." ON ".$gradestblname.".userid = ".$userstblname.".id".
+    " LEFT JOIN ".$exertblname." ON ".$gradestblname.".exercise = ".$exertblname.".id".
+    " LEFT JOIN ".$atttblname." ON ".$atttblname.".id = ".$gradestblname.".attemptid".
+    " WHERE roshine=".$sid." AND ".$gradestblname.".userid=".$uid;
+    if ($orderby == 0 || $orderby == -1) {
+        $oby = " ORDER BY ".$gradestblname.".id";
+    } else if ($orderby == 1) {
+        $oby = " ORDER BY ".$userstblname.".firstname";
+    } else if ($orderby == 2) {
+        $oby = " ORDER BY ".$userstblname.".lastname";
+    } else if ($orderby == 3) {
+        $oby = " ORDER BY ".$atttblname.".ros_suspicion";
+    } else if ($orderby == 4) {
+        $oby = " ORDER BY ".$gradestblname.".mistakes";
+    } else if ($orderby == 5) {
+        $oby = " ORDER BY ".$gradestblname.".timeinseconds";
+    } else if ($orderby == 6) {
+        $oby = " ORDER BY ".$gradestblname.".hitsperminute";
+    } else if ($orderby == 7) {
+        $oby = " ORDER BY ".$gradestblname.".fullhits";
+    } else if ($orderby == 8) {
+        $oby = " ORDER BY ".$gradestblname.".precisionfield";
+    } else if ($orderby == 9) {
+        $oby = " ORDER BY ".$gradestblname.".timetaken";
+    } else if ($orderby == 10) {
+        $oby = " ORDER BY ".$exertblname.".exercisename";
+    } else if ($orderby == 12) {
+        $oby = " ORDER BY ".$gradestblname.".wpm";
+    } else {
+        $oby = "";
+    }
+    $sql .= $oby;
+    if ($desc) {
+        $sql .= " DESC";
+    }
+    if ($grades = $DB->get_records_sql($sql, $params)) {
+        return $grades;
+    }
+    return false;
+}
 /**
  * Saves a new instance of the roshine into the database
  *
@@ -419,11 +626,11 @@ function roshine_scale_used_anywhere($scaleid) {
     global $DB;
 
     /** @example */
-    if ($scaleid and $DB->record_exists('roshine', array('grade' => -$scaleid))) {
-        return true;
-    } else {
+    //if ($scaleid and $DB->record_exists('roshine', array('grade' => -$scaleid))) {
+   //     return true;
+   // } else {
         return false;
-    }
+    //}
 }
 
 /**

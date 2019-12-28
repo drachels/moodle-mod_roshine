@@ -13,55 +13,48 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
- * The mod_roshine layout imported event.
+ * The mod_roshine lesson and its exercises removed event.
  *
  * @package     mod_roshine
  * @copyright   2016 AL Rachels (drachels@drachels.com)
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace mod_roshine\event;
 defined('MOODLE_INTERNAL') || die();
-
 /**
- * The mod_roshine layout imported event class.
+ * The mod_roshine lesson removed event class.
  *
  * @package    mod_roshine
  * @copyright  2016 AL Rachels drachels@drachels.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class layout_imported extends \core\event\base {
-
+class lesson_deleted extends \core\event\base {
     /**
      * Init method.
      */
     protected function init() {
-        $this->data['crud'] = 'u';
+        $this->data['crud'] = 'd';
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = 'roshine';
     }
-
     /**
      * Returns localised general event name.
      *
      * @return string
      */
     public static function get_name() {
-        return get_string('layout_imported', 'mod_roshine');
+        return get_string('lesson_deleted', 'mod_roshine');
     }
-
     /**
      * Returns description of what happened.
      *
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' imported a roshine keyboard layout while in the course with id
-            '$this->contextinstanceid'";
+        return "The user with id '$this->userid' deleted a roshine lesson and all its exercises while in the course with id
+            '$this->contextinstanceid'.";
     }
-
     /**
      * Returns relevant URL.
      * @return \moodle_url
@@ -69,7 +62,6 @@ class layout_imported extends \core\event\base {
     public function get_url() {
         return new \moodle_url('/mod/roshine/exercises.php', array('id' => $this->contextinstanceid));
     }
-
     /**
      * replace add_to_log() statement.
      *

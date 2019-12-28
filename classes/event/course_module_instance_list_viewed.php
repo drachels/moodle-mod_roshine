@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_mootyper instance list viewed event.
+ * The mod_roshine instance list viewed event.
  *
- * @package    mod_mootyper
+ * @package    mod_roshine
  * @copyright  2016 AL Rachels drachels@drachels.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_mootyper\event;
+namespace mod_roshine\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_mootyper instance list viewed event class.
+ * The mod_roshine instance list viewed event class.
  *
- * @package    mod_mootyper
+ * @package    mod_roshine
  * @copyright  2016 AL Rachels drachels@drachels.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

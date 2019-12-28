@@ -28,6 +28,11 @@
         <FIELD NAME="statsbgc" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Statistics bar background color."/>
         <FIELD NAME="keytopbgc" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Keytop color setting."/>
         <FIELD NAME="keybdbgc" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Keyboard background color setting."/>
+        <FIELD NAME="textalign" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Alignment setting for text to enter and text entry box."/>
+        <FIELD NAME="cursorcolor" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Text to type cursor color setting."/>
+        <FIELD NAME="textbgc" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Text to type background color setting."/>
+        <FIELD NAME="texterrorcolor" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Background color setting for mis-typed letters."/>
+        <FIELD NAME="countmistakes" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Count all keystroke mistakes, or just once per key."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

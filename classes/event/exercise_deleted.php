@@ -15,30 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_roshine layout imported event.
+ * The mod_roshine exercise removed event.
  *
  * @package     mod_roshine
  * @copyright   2016 AL Rachels (drachels@drachels.com)
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace mod_roshine\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_roshine layout imported event class.
+ * The mod_roshine exercise removed event class.
  *
  * @package    mod_roshine
  * @copyright  2016 AL Rachels drachels@drachels.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class layout_imported extends \core\event\base {
+class exercise_removed extends \core\event\base {
 
     /**
      * Init method.
      */
     protected function init() {
-        $this->data['crud'] = 'u';
+        $this->data['crud'] = 'd';
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = 'roshine';
     }
@@ -49,7 +49,7 @@ class layout_imported extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('layout_imported', 'mod_roshine');
+        return get_string('exercise_removed', 'mod_roshine');
     }
 
     /**
@@ -58,7 +58,7 @@ class layout_imported extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' imported a roshine keyboard layout while in the course with id
+        return "The user with id '$this->userid' removed a roshine exercise/category while in the course with id
             '$this->contextinstanceid'";
     }
 

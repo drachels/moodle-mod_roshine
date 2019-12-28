@@ -17,13 +17,23 @@
 /**
  * This file is used to remove exercises and lessons.
  *
+ * Called from exercises.php when clicking on Remove all from 'xxxx' or
+ * one of the remove icon/link for an individual exercise.
+ *
  * @package    mod_roshine
  * @copyright  2011 Jaka Luthar (jaka.luthar@gmail.com)
  * @copyright  2016 onwards AL Rachels (drachels@drachels.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+
+use \mod_roshine\event\exercise_deleted;
+use \mod_roshine\event\lesson_deleted;
+
+// Changed to this newer format 03/01/2019.
+require(__DIR__ . '/../../config.php');
+
 require_login($course, true, $cm);
+
 global $DB;
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID.
@@ -34,24 +44,40 @@ if ($id) {
 }
 $context = context_course::instance($id);
 
-$exerciseid = optional_param('r', 0, PARAM_INT);
+// If r is set we remove an exercise.
+// if l is set we remove a lesson and all its exercises.
+$exerciseid = optional_param('r', '', PARAM_TEXT);
+$lessonid = optional_param('l', '', PARAM_TEXT);
 
-if (isset($exerciseid)) {
+if ($exerciseid) {
+    $lessonpo = optional_param('lesson', '', PARAM_INT);
     $DB->delete_records('roshine_exercises', array('id' => $exerciseid));
-} else {
-    $lessonid = optional_param('l', 0, PARAM_INT);
+    // Trigger module exercise_deleted event.
+    $params = array(
+        'objectid' => $course->id,
+        'context' => $context,
+        'other' => array(
+            'lesson' => $lessonpo,
+            'exercise' => $exerciseid
+        )
+    );
+    $event = exercise_deleted::create($params);
+    $event->trigger();
+} else if ($lessonid) {
     $DB->delete_records('roshine_exercises', array('lesson' => $lessonid));
     $DB->delete_records('roshine_lessons', array('id' => $lessonid));
+    $lessonpo = 0;
+    // Trigger module lesson_deleted event.
+    $params = array(
+        'objectid' => $course->id,
+        'context' => $context,
+        'other' => $lessonid
+    );
+    $event = lesson_deleted::create($params);
+    $event->trigger();
 }
 
-// Trigger module exercise_removed event.
-$event = \mod_roshine\event\exercise_removed::create(array(
-    'objectid' => $course->id,
-    'context' => $context
-));
-$event->trigger();
-
 $cid = optional_param('id', 0, PARAM_INT);
-$webdir = $CFG->wwwroot . '/mod/roshine/exercises.php?id='.$cid;
+$webdir = $CFG->wwwroot . '/mod/roshine/exercises.php?id='.$cid.'&lesson='.$lessonpo;
 header('Location: '.$webdir);
 

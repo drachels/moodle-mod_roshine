@@ -26,9 +26,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
-require_once(dirname(__FILE__).'/locallib.php');
+// Changed to this newer format 03/01/2019.
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
+require_once(__DIR__ . '/locallib.php');
 
 global $USER;
 
@@ -39,6 +40,8 @@ $md = optional_param('jmode', 0, PARAM_INT);
 $us = optional_param('juser', 0, PARAM_INT);
 $orderby = optional_param('orderby', -1, PARAM_INT);
 $des = optional_param('desc', -1, PARAM_INT);
+$mtmode = optional_param('mtmode', 0, PARAM_INT);  // Is this Roshine a lesson or practice activity?
+
 if ($md == 1) {
     $us = 0;
 } else if ($md == 0) {
@@ -55,6 +58,8 @@ if ($id) {
 } else {
     error('You must specify a course_module ID or an instance ID');
 }
+
+$mtmode = $roshine->isexam;
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 
@@ -62,7 +67,6 @@ $context = context_module::instance($cm->id);
 if (!has_capability('mod/roshine:viewmygrades', context_module::instance($cm->id))) {
     redirect('view.php?id='.$id, get_string('invalidaccess', 'roshine'));
 } else {
-
     $PAGE->set_url('/mod/roshine/owngrades.php', array('id' => $cm->id));
     $PAGE->set_title(format_string($roshine->name));
     $PAGE->set_heading(format_string($course->fullname));
@@ -73,14 +77,17 @@ if (!has_capability('mod/roshine:viewmygrades', context_module::instance($cm->id
     echo $OUTPUT->heading($roshine->name);
     $htmlout = '';
     $htmlout .= '<div id="mainDiv">';
+    if ($mtmode == 2) {
+        echo get_string('practice', 'roshine');
+    }
 
     // Update the library.
     if ($des == -1 || $des == 0) {
-        $grds = get_typergradesuser(optional_param('n', 0, PARAM_INT), $USER->id, $orderby, 0);
+        $grds = ros_get_typergradesuser(optional_param('n', 0, PARAM_INT), $USER->id, $orderby, 0);
     } else if ($des == 1) {
-        $grds = get_typergradesuser(optional_param('n', 0, PARAM_INT), $USER->id, $orderby, 1);
+        $grds = ros_get_typergradesuser(optional_param('n', 0, PARAM_INT), $USER->id, $orderby, 1);
     } else {
-        $grds = get_typergradesuser(optional_param('n', 0, PARAM_INT), $USER->id, $orderby, $des);
+        $grds = ros_get_typergradesuser(optional_param('n', 0, PARAM_INT), $USER->id, $orderby, $des);
     }
     if ($des == -1 || $des == 1) {
         $lnkadd = "&desc=0";
@@ -116,14 +123,28 @@ if (!has_capability('mod/roshine:viewmygrades', context_module::instance($cm->id
                    .'</td><td><a href="?id='.$id.'&n='.$n.'&orderby=12'.$lnkadd.'">'.
         get_string('wpm', 'roshine').'</a>'.$arrtextadds[12].'</td></tr>';
         foreach ($grds as $gr) {
-            if (!$roshine->isexam && $gr->pass) {
+            if (!($mtmode == 1) && $gr->pass) {
                 $stil = 'background-color: '.(get_config('mod_roshine', 'passbgc')).';';
-            } else if (!$roshine->isexam && !$gr->pass) {
+            } else if (!($mtmode == 1) && !$gr->pass) {
                 $stil = 'background-color: '.(get_config('mod_roshine', 'failbgc')).';';
             } else {
                 $stil = '';
             }
-            $fcol = $roshine->isexam ? '---' : $gr->exercisename;
+
+            if ($mtmode == 2) {
+                $removelnk = '<a href="'.$CFG->wwwroot . '/mod/roshine/attrem.php?c_id='.optional_param('id', 0, PARAM_INT)
+                             .'&m_id='.optional_param('n', 0, PARAM_INT)
+                             .'&mtmode='.$mtmode
+                             .'&g='.$gr->id.'">'
+                             .get_string('eremove', 'roshine').'</a>';
+            } else {
+                $removelnk = '<a href="'.$CFG->wwwroot . '/mod/roshine/attrem.php?c_id='.optional_param('id', 0, PARAM_INT)
+                             .'&m_id='.optional_param('n', 0, PARAM_INT)
+                             .'&g='.$gr->id.'">'
+                             .'</a>';
+            }
+
+            $fcol = ($mtmode == 1) ? '---' : $gr->exercisename;
             $htmlout .= '<tr style="border-top-style: solid;'.$stil.'"><td>'.$fcol.'</td><td>'
                         .$gr->mistakes.'</td><td>'.format_time($gr->timeinseconds).
                         '</td><td>'.format_float($gr->hitsperminute).'</td><td>'.$gr->fullhits
@@ -134,7 +155,7 @@ if (!has_capability('mod/roshine:viewmygrades', context_module::instance($cm->id
             $seriesprecision[] = format_float($gr->precisionfield);  // Get the precision percentage value.
             $serieswpm[] = $gr->wpm; // Get the corrected words per minute rate.
         }
-        $avg = get_grades_avg($grds);
+        $avg = ros_get_grades_avg($grds);
         if (!$roshine->isexam) {
             $htmlout .= '<tr style="border-top-style: solid;"><td><strong>'.get_string('average', 'roshine')
                         .': </strong></td><td>'.$avg['mistakes'].'</td><td>'.format_time($avg['timeinseconds'])

@@ -16,7 +16,10 @@
 
 /**
  * This file replaces the legacy STATEMENTS section in db/install.xml,
- * lib.php/modulename_install() post installation hook and partially defaults.php
+ * lib.php/modulename_install() post installation hook and partially defaults.php.
+ *
+ *
+ *
  *
  * @package    mod_roshine
  * @copyright  Nguyen Quang Viet, Nguyen Thi Hong Nhung
@@ -106,9 +109,17 @@ function ros_read_lessons_file($dafile, $authoridarg, $visiblearg, $editablearg,
     $splitted = explode ('/**/' , $haha);
     for ($j = 0; $j < count($splitted); $j++) {
         $vaja = trim($splitted[$j]);
+        // @codingStandardsIgnoreLine
+        $allowed = array('\\', '~', '!', '@', '#', '$', '%', '^', '&', '(', ')', '*', '_', '+', ':', ';', '"', '{', '}', '>', '<', '?', '\'', '-', '/', '=', '.', ',', ' ', '|', '¡', '`', 'ç', 'ñ', 'º', '¿', 'ª', '·', '\n', '\r', '\r\n', '\n\r', ']', '[', '¬', '´', '`');
         $nm = "".($j + 1);
         $texttotype = "";
         for ($k = 0; $k < strlen($vaja); $k++) {
+            // TODO
+            // * If it is not a letter
+            // * and if it is not a number
+            // * compare against $allowed array.
+            // * Iif not included die
+            // * or something.
             $ch = $vaja[$k];
             if ($ch == "\n") {
                 $texttotype .= '\n';

@@ -23,9 +23,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
-require_once(dirname(__FILE__).'/locallib.php');
+// Changed to this newer format 03/01/2019.
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
+require_once(__DIR__ . '/locallib.php');
 
 global $DB, $USER;
 
@@ -41,10 +42,12 @@ if ($exerciseid == 0) {
     error('No exercise to edit!');
 }
 
+$context = context_course::instance($id);
+
 require_login($course, true);
-if (isset($_POST['button'])) {
-    $param1 = $_POST['button'];
-}
+// Check to see if Confirm button is clicked and returning 'Confirm' to trigger update record.
+$param1 = optional_param('button', '', PARAM_TEXT);
+
 if (isset($param1) && get_string('fconfirm', 'roshine') == $param1 ) {
     $newtext = optional_param('texttotype', '', PARAM_CLEANHTML);
     $rcrd = $DB->get_record('roshine_exercises', array('id' => $exerciseid), '*', MUST_EXIST);
@@ -55,6 +58,14 @@ if (isset($param1) && get_string('fconfirm', 'roshine') == $param1 ) {
     $updr->lesson = $rcrd->lesson;
     $updr->snumber = $rcrd->snumber;
     $DB->update_record('roshine_exercises', $updr);
+
+    // Trigger module exercise_edited event.
+    $event = \mod_roshine\event\exercise_edited::create(array(
+        'objectid' => $course->id,
+        'context' => $context
+    ));
+    $event->trigger();
+
     $webdir = $CFG->wwwroot . '/mod/roshine/exercises.php?id='.$id;
     echo '<script type="text/javascript">window.location="'.$webdir.'";</script>';
 }

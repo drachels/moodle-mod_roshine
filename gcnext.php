@@ -15,31 +15,43 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    mod
- * @subpackage roshine
+ * This file adds grade and performance info to mdl_mootyper_grades after an exercise.
+ *
+ * @package    mod_roshine
+ * @copyright  2016 onwards AL Rachels (drachels@drachels.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/locallib.php');
+
 global $DB;
-if ($_POST['rpAccInput'] >= $_POST['rpGoal']) {
-	$passField = 1;
+
+require_login(0, true, null, false);
+if (optional_param('rpAccInput', '', PARAM_FLOAT) >= optional_param('rpGoal', '', PARAM_FLOAT)) {
+    $passfield = 1;
 } else {
-	$passField = 0;
+    $passfield = 0;
 }
 $record = new stdClass();
-$record->roshine = $_POST['rpSityperId'];
-$record->userid = $_POST['rpUser'];
+$record->roshine = optional_param('rpSityperId', '', PARAM_INT);
+$record->userid = optional_param('rpUser', '', PARAM_INT);
+// Gradebook entry has not been implemented, 10/10/17.
 $record->grade = 0;
-$record->mistakes = $_POST['rpMistakesInput'];
-$record->timeinseconds = $_POST['rpTimeInput'];
-$record->hitsperminute = $_POST['rpSpeedInput'];
-$record->fullhits = $_POST['rpFullHits'];
-$record->precisionfield = $_POST['rpAccInput'];
+// Temp change to put precision in gradebook for exam.
+$record->grade = optional_param('rpAccInput', '', PARAM_FLOAT);
+$record->mistakes = optional_param('rpMistakesInput', '', PARAM_INT);
+$record->timeinseconds = optional_param('rpTimeInput', '', PARAM_INT);
+$record->hitsperminute = optional_param('rpSpeedInput', '', PARAM_FLOAT);
+$record->fullhits = optional_param('rpFullHits', '', PARAM_INT);
+$record->precisionfield = optional_param('rpAccInput', '', PARAM_FLOAT);
 $record->timetaken = time();
-$record->exercise = $_POST['rpExercise'];
-$record->pass = $passField;
-$record->attemptid = $_POST['rpAttId'];
+$record->exercise = optional_param('rpExercise', '', PARAM_INT);
+$record->pass = $passfield;
+$record->attemptid = optional_param('rpAttId', '', PARAM_INT);
+$record->wpm = (max(0, optional_param('rpWpmInput', '', PARAM_FLOAT)));
+
 $DB->insert_record('roshine_grades', $record, false);
-$webdir = $CFG->wwwroot . '/mod/roshine/view.php?n='.$_POST['rpSityperId'];
+
+$webdir = $CFG->wwwroot . '/mod/roshine/view.php?n='.$record->roshine;
 echo '<script type="text/javascript">window.location="'.$webdir.'";</script>';

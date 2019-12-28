@@ -26,11 +26,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
-require_once(dirname(__FILE__).'/locallib.php');
+// Changed to this newer format 03/01/2019.
+require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
+require_once(__DIR__ . '/locallib.php');
 
-global $USER, $CFG;
+global $USER, $CFG, $THEME;
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID.
 $n  = optional_param('n', 0, PARAM_INT);  // Roshine instance ID - it should be named as the first character of the module.
@@ -43,19 +44,35 @@ $backtocourse = optional_param('backtocourse', false, PARAM_RAW);
 if ($id) {
     $cm         = get_coursemodule_from_id('roshine', $id, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $roshine  = $DB->get_record('roshine', array('id' => $cm->instance), '*', MUST_EXIST);
+    $roshine    = $DB->get_record('roshine', array('id' => $cm->instance), '*', MUST_EXIST);
 } else if ($n) {
-    $roshine  = $DB->get_record('roshine', array('id' => $n), '*', MUST_EXIST);
+    $roshine    = $DB->get_record('roshine', array('id' => $n), '*', MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $roshine->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('roshine', $roshine->id, $course->id, false, MUST_EXIST);
 } else {
     error('You must specify a course_module ID or an instance ID');
 }
 
+$mtmode = $roshine->isexam;
+
 require_login($course, true, $cm);
 
+if ($backtocourse) {
+    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+}
+
+// Following two lines are for View, Automatic Completion marking. 20180630.
+$completion = new completion_info($course);
+$completion->set_module_viewed($cm);
+
+// In roshine there is a link to renderer.php that goes here.
+// I have moved set_title and set_heading to renederer.php.
+// $PAGE->set_url('/mod/roshine/view.php', array('id' => $cm->id));
+
 $context = context_module::instance($cm->id);
-// add_to_log($course->id, 'roshine', 'view', "view.php?id={$cm->id}", $roshine->name, $cm->id);
+
+// The following is used in roshine.
+//$roshineoutput = $PAGE->get_renderer('mod_roshine');
 
 // Print the page header.
 
@@ -76,6 +93,7 @@ $PAGE->set_cacheable(false);
 // Output starts here
 echo $OUTPUT->header();
 
+// In roshine the following line is at line 143.
 if ($roshine->intro) { // Conditions to show the intro can change to look for own settings or whatever
     echo $OUTPUT->box(format_module_intro('roshine', $roshine, $cm->id), 'generalbox mod_introbox', 'roshineintro');
 }
@@ -122,7 +140,7 @@ if($roshine->lesson != NULL) {
 <div id="tipkovnica" style="float: left; text-align:center; margin-left: auto; margin-right: auto;">
 <h4 style="color:#FF0066">
         <?php
-        if (!$roshine->isexam) {
+        //if (!$roshine->isexam) {
             // Need to get count of exercises in the current lesson.
             $sqlc = "SELECT COUNT(rte.texttotype)
                     FROM {roshine_lessons} rtl
@@ -131,8 +149,18 @@ if($roshine->lesson != NULL) {
                     WHERE rtl.id = $roshine->lesson";
 
             $count = $DB->count_records_sql($sqlc, $params = null);
+        // If this Roshine is set to practice, add, Practice to the exercise name above the status bar.
+        if ($mtmode === '0') {
+            echo get_string('fmode', 'roshine').' = '.get_string('flesson', 'roshine').'&nbsp;&nbsp; '.get_string('exercise', 'roshine', $exercise->exercisename).$count;
+        } else if ($mtmode === '1') {
+            echo get_string('fmode', 'roshine').' = '.get_string('isexamtext', 'roshine').'&nbsp;&nbsp; '.get_string('exercise', 'roshine', $exercise->exercisename).$count;
+        } else if ($mtmode === '2') {
+            echo get_string('fmode', 'roshine').' = '.get_string('practice', 'roshine').'&nbsp;&nbsp; '.get_string('exercise', 'roshine', $exercise->exercisename).$count;
+        } else {
+
             echo get_string('exercise', 'roshine', $exercise->exercisename).$count;
         }
+        //}
         ?>
 
 </h4>

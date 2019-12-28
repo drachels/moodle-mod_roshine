@@ -26,8 +26,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+// Changed to this newer format 03/01/2019.
+require(__DIR__ . '/../../config.php');
+
 require_login($course, true, $cm);
+
 global $DB;
 
 $mid = optional_param('m_id', 0, PARAM_INT);  // MooTyper id (mdl_roshine).

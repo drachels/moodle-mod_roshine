@@ -82,7 +82,14 @@ Been fixing code errors and warnings. Left off working while on eins.php
 02/22/2019 Finally decided to do more work on Roshine. Started working on view.php file
 to get it 'similar' to MooTyper. Added grade Remove capability from View all grades which
 opens the gview.php file. Had to add the attrem.php file to get Remove to work.
+
 02/22/2019 Add the three links, Add new exercise / category, Import lesson / KB layout, and
 Export / edit exercises, to the Roshine edit menu.
 
-02/26/2019 Created git repository.
+02/26/2019 Created git repository. And started updating code.
+02/27/2019 Last night started rework on the language strings in roshine.php. Finished today.
+02/27/2019 Reworked the mod_form.php page.
+02/27/2019 Reworked the settings.php page.
+02/27/2019 Started reworking the mod_setup.php page.
+
+04/14/19 Fixed language string errors in exercises.php.

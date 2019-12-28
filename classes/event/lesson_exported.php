@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_mootyper lesson exported event.
+ * The mod_roshine lesson exported event.
  *
- * @package     mod_mootyper
+ * @package     mod_roshine
  * @copyright   2016 AL Rachels (drachels@drachels.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later.
  */
 
-namespace mod_mootyper\event;
+namespace mod_roshine\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_mootyper lesson exported event class.
+ * The mod_roshine lesson exported event class.
  *
- * @package    mod_mootyper
+ * @package    mod_roshine
  * @copyright  2016 AL Rachels drachels@drachels.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -40,7 +40,7 @@ class lesson_exported extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_TEACHING;
-        $this->data['objecttable'] = 'mootyper';
+        $this->data['objecttable'] = 'roshine';
     }
 
     /**
@@ -49,7 +49,7 @@ class lesson_exported extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('lesson_exported', 'mod_mootyper');
+        return get_string('lesson_exported', 'mod_roshine');
     }
 
     /**
@@ -58,7 +58,7 @@ class lesson_exported extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' exported a mootyper lesson/category while in the course with id
+        return "The user with id '$this->userid' exported a roshine lesson/category while in the course with id
             '$this->contextinstanceid'";
     }
 
@@ -67,7 +67,7 @@ class lesson_exported extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/mootyper/exercises.php', array('id' => $this->contextinstanceid));
+        return new \moodle_url('/mod/roshine/exercises.php', array('id' => $this->contextinstanceid));
     }
 
     /**
@@ -77,6 +77,6 @@ class lesson_exported extends \core\event\base {
      */
     protected function get_legacy_logdata() {
         $url = new \moodle_url('exercises.php', array('id' => $this->contextinstanceid));
-        return array($this->courseid, 'mootyper', 'exercises', $url->out(), $this->objectid, $this->contextinstanceid);
+        return array($this->courseid, 'roshine', 'exercises', $url->out(), $this->objectid, $this->contextinstanceid);
     }
 }
