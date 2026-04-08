@@ -40,17 +40,23 @@ $n  = optional_param('n', 0, PARAM_INT);  // Roshine instance ID - it should be 
 $directionality = get_string('thisdirection', 'langconfig');
 $userpassword = optional_param('userpassword', '', PARAM_RAW);
 $backtocourse = optional_param('backtocourse', false, PARAM_RAW);
-
+$textToEnter = '';
+/*
+ Upon first time entry to the activity, $id is available and used while
+ $n is not available and is set to 0. When returning to the activity
+ after completing an exercise, $id is unavailable and gets set to 0,
+ and $n is available from gcnext.php and is used instead.
+*/
 if ($id) {
-    $cm         = get_coursemodule_from_id('roshine', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $roshine    = $DB->get_record('roshine', array('id' => $cm->instance), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('roshine', $id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    $roshine = $DB->get_record('roshine', array('id' => $cm->instance), '*', MUST_EXIST);
 } else if ($n) {
-    $roshine    = $DB->get_record('roshine', array('id' => $n), '*', MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $roshine->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance('roshine', $roshine->id, $course->id, false, MUST_EXIST);
+    $roshine = $DB->get_record('roshine', array('id' => $n), '*', MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $roshine->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('roshine', $roshine->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    print_error(get_string('roshineerror', 'roshine'));
 }
 
 $mtmode = $roshine->isexam;
@@ -98,20 +104,26 @@ if ($roshine->intro) { // Conditions to show the intro can change to look for ow
     echo $OUTPUT->box(format_module_intro('roshine', $roshine, $cm->id), 'generalbox mod_introbox', 'roshineintro');
 }
 if($roshine->lesson != NULL) {
-    if($roshine->isexam) {
+    //if($roshine->isexam) {
+    // 20220810 Changed to get things to work, similar to MT.
+    if ((int)$mtmode === 1) {
         $insertDir = $CFG->wwwroot . '/mod/roshine/gadd.php';
         $exerciseid = $roshine->exercise;
         $exercise = ros_get_exercise_record($exerciseid);
-        $textToEnter = $exercise->texttotype; //"N=".$n." exerciseid=".$roshine->exercise." fjajfjfjfj name=".$roshine->name." fjfjfjfjfj";
+        $reqiredgoal = $roshine->requiredgoal;
+        if ($exercise) {
+            $textToEnter = $exercise->texttotype;
+        }
     } else {
-        $reqiredGoal = $roshine->requiredgoal;
+        $reqiredgoal = $roshine->requiredgoal;
         $insertDir = $CFG->wwwroot . '/mod/roshine/gcnext.php';
         $exercise = get_exercise_from_roshine($roshine->id, $roshine->lesson, $USER->id);
-        if($exercise != FALSE){
+        if($exercise != FALSE) {
             $exerciseid = $exercise->id;
-            $textToEnter = $exercise->texttotype;}
+            $textToEnter = $exercise->texttotype;
+        }
     }
-    if (ros_exam_already_done($roshine, $USER->id) && $roshine->isexam) {
+    if (ros_exam_already_done($roshine, $USER->id) && ((int)$roshine->isexam === 1)) {
         echo get_string('examdone', 'roshine');
         echo "<br>";
         if (has_capability('mod/roshine:viewgrades', context_module::instance($cm->id))) {
@@ -126,7 +138,7 @@ if($roshine->lesson != NULL) {
 
     }
     else if ($exercise != FALSE) {
-        echo '<link rel="stylesheet" type="text/css" href="style.css">';
+        echo '<link rel="stylesheet" type="text/css" href="style_moodle.css">';
         //js_init_call !!!!!!!!
         //onload="initTypingText('')"
         if ($roshine->showkeyboard) {
@@ -150,11 +162,11 @@ if($roshine->lesson != NULL) {
 
             $count = $DB->count_records_sql($sqlc, $params = null);
         // If this Roshine is set to practice, add, Practice to the exercise name above the status bar.
-        if ($mtmode === '0') {
+        if ((int)$mtmode === 0) {
             echo get_string('fmode', 'roshine').' = '.get_string('flesson', 'roshine').'&nbsp;&nbsp; '.get_string('exercise', 'roshine', $exercise->exercisename).$count;
-        } else if ($mtmode === '1') {
+        } else if ((int)$mtmode === 1) {
             echo get_string('fmode', 'roshine').' = '.get_string('isexamtext', 'roshine').'&nbsp;&nbsp; '.get_string('exercise', 'roshine', $exercise->exercisename).$count;
-        } else if ($mtmode === '2') {
+        } else if ((int)$mtmode === 2) {
             echo get_string('fmode', 'roshine').' = '.get_string('practice', 'roshine').'&nbsp;&nbsp; '.get_string('exercise', 'roshine', $exercise->exercisename).$count;
         } else {
 
@@ -184,7 +196,7 @@ if($roshine->lesson != NULL) {
                     </div>
     </div>
     <br>
-    <div id="textToEnter"></div><br>
+    <div id="textToEnter"><?php echo s($textToEnter); ?></div><br>
     <?php 
     if($roshine->showkeyboard){
         $keyboard = ros_get_instance_layout_file($roshine->layout);
@@ -195,10 +207,10 @@ if($roshine->lesson != NULL) {
     ?>
     
 <br>
-    <textarea name="tb1" wrap="off" id="tb1" class="tb1" onkeypress="return onUserPressKey(event)" onfocus="return focusSet(event)"  
+    <textarea name="tb1" wrap="off" id="tb1" class="tb1" onfocus="return focusSet(event)"  
         onpaste="return false" onselectstart="return false"
         onCopy="return false" onCut="return false" 
-        onDrag="return false" onDrop="return false" autocomplete="off" style="display:none">
+        onDrag="return false" onDrop="return false" autocomplete="off" style="position:fixed; left:0; top:0; opacity:0; width:1px; height:1px; pointer-events:none; z-index:-1;">
         <?php 
             echo get_string('chere', 'roshine').'...';
         ?>
@@ -233,22 +245,23 @@ if($roshine->lesson != NULL) {
     <input name='rpExercise' type='hidden' value='<?php echo $exerciseid; ?>'>
     <input name='rpAttId' type='hidden' value=''>
     <input name='rpFullHits' type='hidden' value=''>
-    <input name='rpGoal' type='hidden' value='<?php if(isset($reqiredGoal)) echo $reqiredGoal; ?>'>
+    <input name='rpGoal' type='hidden' value='<?php if (isset($reqiredgoal)) { echo $reqiredgoal; } ?>'>
     <input name='rpTimeInput' type='hidden'>
     <input name='rpMistakesInput' type='hidden'>
     <input name='rpAccInput' type='hidden'>
     <input name='rpSpeedInput' type='hidden'>
+    <input name='rpWpmInput' type='hidden'>
     <input class="btn" style="visibility: hidden;" id="btnContinue" name='btnContinue' type="submit" value=<?php echo "'".get_string('fcontinue', 'roshine')."'"; ?>> 
 </div>    
                 
 <div>
-    <button class="btn" id="btnOptions" onclick="return false;"><?php echo get_string('options', 'roshine'); ?></button>
-    <button class="btn" id="btnStatus" onclick="return false;"><?php echo get_string('status', 'roshine'); ?></button>
+    <button type="button" class="btn" id="btnOptions" onclick="(function(){var m=document.getElementById('modalOptions'); if(m){m.classList.remove('hide'); m.classList.add('in'); m.style.display='block';}})(); return false;"><?php echo get_string('options', 'roshine'); ?></button>
+    <button type="button" class="btn" id="btnStatus" onclick="(function(){var m=document.getElementById('modalLessonComplete'); if(m){m.classList.remove('hide'); m.classList.add('in'); m.style.display='block';}})(); return false;"><?php echo get_string('status', 'roshine'); ?></button>
     <a href="game.php?id=<?php echo $id ?>">Game</a>
 </div>        
 <div id="modalOptions" class="modal hide fade" tabindex=-1 role="dialog" aria-labelledby="mdlOptionsHeader" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="(function(btn){var m=btn.closest('.modal'); if(m){m.classList.remove('in'); m.classList.add('hide'); m.style.display='none';}})(this); return false;">x</button>
         <h3 id="mdlOptionsHeader"><?php echo get_string('options', 'roshine'); ?></h3>
     </div>
     <div class="modal-body">
@@ -285,7 +298,7 @@ if($roshine->lesson != NULL) {
                     
 <div id="modalLessonComplete" class="modal hide fade" tabindex=-1 role="dialog" aria-labelledby="headerLessonComplete" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="(function(btn){var m=btn.closest('.modal'); if(m){m.classList.remove('in'); m.classList.add('hide'); m.style.display='none';}})(this); return false;">x</button>
         <h3 id="headerLessonComplete"><?php echo get_string('lessionstatistics', 'roshine'); ?></h3>
     </div>
     <div class="modal-body">
@@ -313,7 +326,7 @@ if($roshine->lesson != NULL) {
                     
 <div id="modalLessonComplete2" class="modal hide fade" tabindex=-1 role="dialog" aria-labelledby="headerLessonComplete" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="(function(btn){var m=btn.closest('.modal'); if(m){m.classList.remove('in'); m.classList.add('hide'); m.style.display='none';}})(this); return false;">x</button>
         <h3 id="headerLessonComplete"><?php echo get_string('lessioncomplete', 'roshine'); ?></h3>
     </div>
     <div class="modal-body">
@@ -343,27 +356,20 @@ if($roshine->lesson != NULL) {
 </form>
 </div>
         <?php
-        $textToInit = '';
-        for ($it = 0; $it < strlen($textToEnter); $it++) {
-            if ($textToEnter[$it] == "\n") {
-                $textToInit .= '\n';
-            } else if($textToEnter[$it] == '"') {
-                $textToInit .= '\"';
-            } else if($textToEnter[$it] == "\\") {
-                $textToInit .= '\\';
-            } else {
-                $textToInit .= $textToEnter[$it];
-            }
-        }
-
         $record = ros_get_last_check($roshine->id);
+        $texttoinitjson = json_encode((string)$textToEnter);
         if (is_null($record)) {
-            echo '<script type="text/javascript">initTypingText("' . $textToInit . '", 0, 0, 0, 0, 0, "' .
-                $CFG->wwwroot . '", ' . $roshine->showkeyboard . ');</script>';
+            echo '<script type="text/javascript">(function(){'
+                . 'var mttext=' . $texttoinitjson . ';'
+                . 'if (typeof initTypingText === "function") { initTypingText(mttext, 0, 0, 0, 0, 0, "' . $CFG->wwwroot . '", ' . $roshine->showkeyboard . ', ' . (int)$roshine->continuoustype . ', ' . (int)$roshine->countmistypedspaces . ', ' . (int)$roshine->countmistakes . '); }'
+                . 'else { var el = document.getElementById("textToEnter"); if (el) { el.textContent = mttext; } }'
+                . '})();</script>';
         } else {
-            echo '<script type="text/javascript">initTypingText("' . $textToInit . '", 1, ' . $record->mistakes .', ' .
-                $record->hits . ', ' . $record->timetaken . ', ' . $record->attemptid . ', "' . $CFG->wwwroot . '", ' .
-                $roshine->showkeyboard.');</script>';
+            echo '<script type="text/javascript">(function(){'
+                . 'var mttext=' . $texttoinitjson . ';'
+                . 'if (typeof initTypingText === "function") { initTypingText(mttext, 1, ' . (int)$record->mistakes . ', ' . (int)$record->hits . ', ' . (int)$record->timetaken . ', ' . (int)$record->attemptid . ', "' . $CFG->wwwroot . '", ' . $roshine->showkeyboard . ', ' . (int)$roshine->continuoustype . ', ' . (int)$roshine->countmistypedspaces . ', ' . (int)$roshine->countmistakes . '); }'
+                . 'else { var el = document.getElementById("textToEnter"); if (el) { el.textContent = mttext; } }'
+                . '})();</script>';
         }
     } else {
         echo get_string('endlesson', 'roshine');
@@ -390,9 +396,6 @@ if($roshine->lesson != NULL) {
         echo get_string('notreadyyet', 'roshine');
     }
 }
-// css dung de hien thi khung tuy chon (Option) Used to display optional frames.
-echo '<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css">';
-
 // Trigger module viewed event.
 $event = \mod_roshine\event\course_module_viewed::create(array(
    'objectid' => $roshine->id,
@@ -404,5 +407,5 @@ $event->add_record_snapshot('roshine', $roshine);
 $event->trigger();
 
 //Khong cho hien thi menu trai - Do not display the menu.
-//echo $OUTPUT->footer();
+echo $OUTPUT->footer();
 

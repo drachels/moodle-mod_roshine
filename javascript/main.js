@@ -4,14 +4,42 @@ var _options = {
 	
 };
 
+function showRosModal(modalid) {
+	var modal = $('#' + modalid);
+	if (typeof modal.modal === 'function') {
+		modal.modal('show');
+	} else {
+		modal.removeClass('hide').addClass('in').css('display', 'block');
+	}
+}
+
+function hideRosModal(modalid) {
+	var modal = $('#' + modalid);
+	if (typeof modal.modal === 'function') {
+		modal.modal('hide');
+	} else {
+		modal.removeClass('in').addClass('hide').css('display', 'none');
+	}
+}
+
 $(document).ready(function(){
     $('#btnOptions').click(function() {
-        $('#modalOptions').modal('show');
+		showRosModal('modalOptions');
+		return false;
     });
 	
 	 $('#btnStatus').click(function() {
-        $('#modalLessonComplete').modal('show');
+		showRosModal('modalLessonComplete');
+		return false;
     });
+
+	$('#modalOptions .close, #modalLessonComplete .close, #modalLessonComplete2 .close').click(function() {
+		var parentmodal = $(this).closest('.modal').attr('id');
+		if (parentmodal) {
+			hideRosModal(parentmodal);
+		}
+		return false;
+	});
 
 	setOptionModalAttributes();
 });
@@ -23,7 +51,7 @@ function setOptionModalAttributes() {
 	}); 
 
 	$('#option-cancel').click(function() {
-		$('#modalOptions').modal('hide');
+		hideRosModal('modalOptions');
 		return false;
 	});
 	
@@ -32,12 +60,13 @@ function setOptionModalAttributes() {
 		_options.showFullScreen = $('#optFullScreen').is(':checked');
 		
 		callbackOptionChange(); // Take actions based on new options
-		$('#modalOptions').modal('hide');
+		hideRosModal('modalOptions');
 		return false;
 	});
 }
 
 // Viet : them vao mot so ham xu ly Fullscreen
+// Viet : add a few numbers Fullscreen
 function callbackOptionChange() {
 	o = _options;
 	

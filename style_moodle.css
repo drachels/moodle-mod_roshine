@@ -1,0 +1,950 @@
+div#mainDiv
+{
+text-align:center;
+width: 100%;
+}
+div#wrapStats
+{
+
+
+ position:relative;
+  padding:0px 0px 0px 0px;
+  margin-top:0px;
+  margin:auto;
+  margin-bottom:2px;
+  width:730px;
+  color:#1d4851;
+  *color:#66CCFF;
+  font-family:Times New Roman, Times, serif;
+  font-size:24px;
+  font-weight:bold;
+
+}
+div#timerDiv
+{
+    background:#bbff99;
+    -moz-border-radius-topleft: 7px 21px;
+     border-top-left-radius: 10px ;
+   box-shadow:  
+        0 1px 0 #aaa,
+        0 4px 0 #bbb,
+        0 30px 0px #ddd;
+}
+div#wpmDiv
+{
+    *background: #ffaaaa;
+    background: #bbff99;
+   box-shadow:  
+        0 1px 0 #aaa,
+        0 4px 0 #bbb,
+        0 30px 0px #ddd;
+}
+div#accuracyDiv
+{
+    *background:#fdff99;
+    background: #bbff99;
+   box-shadow:  
+        0 1px 0 #aaa,
+        0 4px 0 #bbb,
+        0 30px 0px #ddd;
+}
+div#progressDiv
+{
+    *background:#fdff99;
+    background: #bbff99;
+    -moz-border-radius-topright: 7px 21px;
+     border-top-right-radius: 10px ;
+   box-shadow:  
+        0 1px 0 #aaa,
+        0 4px 0 #bbb,
+        0 30px 0px #ddd;
+}
+.statsText
+{
+    font-size: 12px;
+}
+div#textToEnter
+{
+
+
+ position:relative;
+  padding:6px 12px 30px 12px;
+  margin-top:0px;
+  margin:auto;
+  margin-bottom:20px;
+  width:730px;
+  height:160px;
+  overflow:hidden; 
+  color:#1d4851;
+  font-family:Times New Roman, Times, serif;
+  font-size:24px;
+  font-weight:bold;
+  line-height:30px;
+  *background:#CCC;
+  background:#8eb6d8;
+  border:0px solid #8eb6d8;
+  -webkit-border-radius:8px;
+  -moz-border-radius:8px;
+  border-radius:8px;
+    text-align: left;
+  
+   -webkit-box-shadow:  
+        inset 0 0 8px #bbb,
+        0 1px 0 #aaa,
+        0 4px 0 #bbb,
+        0 10px 30px #ddd;
+    -moz-box-shadow:  
+        inset 0 0 8px #bbb,
+        0 1px 0 #aaa,
+        0 4px 0 #bbb,
+        0 10px 30px #ddd;
+    box-shadow:  
+        inset 0 0 8px #bbb,
+        0 1px 0 #aaa,
+        0 4px 0 #bbb,
+        0 10px 30px #ddd;
+}
+
+#textToEnter span[id^="crka"] {
+        white-space: pre;
+}
+#jsTime
+{
+padding: 5px;
+}
+#jsProgress
+{
+padding: 5px;
+}
+#jsAcc
+{
+padding: 5px;
+}
+#jsSpeed
+{
+padding: 5px;
+}
+.tb1
+{
+width: 500px;
+height: 100px;
+font-size: extra-small;
+font-family: Courier;
+overflow-x: scroll;
+}
+.txtZeleno
+{
+color: #8eb6d8;
+text-shadow: -1px -1px #666, 1px 1px #8eb6d8;
+}
+.txtRdece
+{
+color: white;
+}
+.txtModro
+{
+color: white;
+*background-color: #66CCFF;
+background-color: #ffaaaa;
+/*padding: 0px 2px 0px 2px;*/
+border: 0px solid #2288ff;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  border-radius:2px;
+}
+.normal
+{
+display: inline-block;
+width: 40px;
+height: 40px;
+font-size: 18px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+font-size: small;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #ccc;
+    color: #000;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #666;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.4);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+.finger4
+{
+display: inline-block;
+width: 40px;
+height: 40px;
+font-size: 18px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #ffaaaa;
+    color: #000;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #cc0000;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.5);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}                   
+.finger3            
+{                   
+display: inline-block;
+width: 40px;
+height: 40px;
+font-size: 18px;    
+border-right-style: white-space-collapse;
+text-align: center; 
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #bbff99;
+    color: #000;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #00aa00;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.8);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}                   
+.finger2            
+{                   
+display: inline-block;
+width: 40px;
+height: 40px;
+font-size: 18px;     
+border-right-style: white-space-collapse;
+text-align: center; 
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #fdff99;
+    color: #000;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #e89700;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.8);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}                   
+.finger1            
+{                   
+display: inline-block;
+width: 40px;
+height: 40px;
+font-size: 18px;     
+border-right-style: white-space-collapse;
+text-align: center; 
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #99ddff;
+    color: #000;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #0088bb;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.8);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}                   
+.fingerSpace        
+{                   
+display: inline-block;
+width: 40px;
+height: 40px;
+font-size: 18px;   
+border-right-style: white-space-collapse;
+text-align: center; 
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #99ddff;
+    color: #000;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #0088bb;
+    font-weight: bold;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.8);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}                   
+.next1              
+{                   
+display: inline-block;
+width: 40px;
+height: 40px;
+margin-right:5px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #0070c1;
+    color: #fff;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #004182;
+
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}   
+.next1.font18
+{
+font-size:18px;
+}                  
+.next2              
+{                   
+display: inline-block;
+width: 40px;
+height: 40px;
+margin-right:5px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #c17400;
+    color: #fff;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #825700;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}       
+.next2.font18
+{
+font-size:18px;
+}              
+.next3              
+{                   
+display: inline-block;
+width: 40px;
+height: 40px;
+margin-right:5px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #2e8901;
+    color: #fff;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #315e00;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+.next3.font18
+{
+font-size:18px;
+}                   
+.next4              
+{                   
+display: inline-block;
+width: 40px;
+height: 40px;
+margin-right:5px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #d90000;
+    color: #fff;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #cc0000;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}     
+.next4.font18
+{
+font-size:18px;
+}  
+.nextEnter              
+{                   
+display: inline-block;
+width: 77px;
+height: 40px;
+font-size:18px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #d90000;
+    color: #fff;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #cc0000;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}        
+.nextShift              
+{                   
+display: inline-block;
+width: 100px;
+height: 40px;
+font-size:18px;
+margin-right:0px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #d90000;
+    color: #fff;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #cc0000;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}      
+.nextShift.left   
+{
+ margin-right:5px;
+}
+.nextSpace          
+{                   
+display: inline-block;
+width: 274px;
+height: 40px;
+margin-right:5px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #757500;
+    color: #fff;    
+    -webkit-border-rad�ius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #353500;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+.nextNumber
+{                   
+display: inline-block;
+width: 40px;
+height: 40px;
+margin-right:5px;
+border-right-style: white-space-collapse;
+text-align: center;
+vertical-align: middle;
+    padding: 6px 6px;
+    margin: 0px 5px 0px 5x;
+    background: #d90000;
+    color: #fff;    
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #cc0000;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-transition-duration: 0.2s;
+    -moz-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}    
+
+/* Keep keyboard geometry local to the activity without restoring global site resets. */
+.keyboard {
+    margin-bottom: 2em;
+    zoom: 1;
+    background: #d5d9dc;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    padding: 10px 22px 0 20px;
+    box-shadow:
+        inset 0 0 8px #bbb,
+        0 1px 0 #aaa,
+        0 4px 0 #bbb,
+        0 10px 30px #ddd;
+}
+
+.keyboard:before,
+.keyboard:after {
+    content: "";
+    display: table;
+}
+
+.keyboard:after {
+    clear: both;
+}
+
+.keyboard section {
+    float: left;
+    margin-right: 15px;
+}
+
+.keyboard section:last-of-type {
+    margin-right: 0;
+}
+
+.keyboard .row {
+    height: 40px;
+    margin-bottom: 5px;
+}
+
+.keyboard .row:last-of-type {
+    margin-bottom: 0;
+}
+
+.keyboard .key {
+    display: inline-block;
+    position: relative;
+    margin-right: 5px;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #aaa;
+    padding-top: 0.25em;
+    vertical-align: top;
+    font-size: 1.2em;
+    color: #333;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.2);
+    background: #fff;
+    background-image: linear-gradient(-90deg, #fff 0%, #e3e3e3 100%);
+}
+
+.keyboard .key:last-of-type {
+    margin-right: 0;
+}
+
+.keyboard .key.wide_1 { width: 61px; }
+.keyboard .key.wide_2 { width: 65px; }
+.keyboard .key.wide_3 { width: 75px; }
+.keyboard .key.wide_4 { width: 98px; }
+.keyboard .key.wide_5 { width: 256px; }
+.keyboard .key.wide_6 { width: 85px; }
+
+.keyboard .key.single {
+    font-size: 1.8em;
+    padding-top: 0.35em;
+}
+
+.keyboard .key em {
+    font-style: normal;
+}
+
+.keyboard .key strong {
+    font-weight: normal;
+}
+
+.keyboard .key span {
+    display: block;
+    position: absolute;
+    width: 100%;
+    padding: 0.2em 0.5em;
+    bottom: 0;
+    font-size: 0.8em;
+    text-align: center;
+}
+
+.keyboard .key span.right {
+    text-align: right;
+}
+
+.keyboard .key span.left {
+    text-align: left;
+}
+
+/* The legacy key classes assume border-box sizing. Without it, highlighted keys
+   grow beyond 40px rows and can overlap the row below (Enter vs B/N/M row). */
+#keyboardContainerRow .keyboard .key,
+#keyboardContainerRow .normal,
+#keyboardContainerRow .finger1,
+#keyboardContainerRow .finger2,
+#keyboardContainerRow .finger3,
+#keyboardContainerRow .finger4,
+#keyboardContainerRow .fingerSpace,
+#keyboardContainerRow .next1,
+#keyboardContainerRow .next2,
+#keyboardContainerRow .next3,
+#keyboardContainerRow .next4,
+#keyboardContainerRow .nextEnter,
+#keyboardContainerRow .nextShift,
+#keyboardContainerRow .nextSpace,
+#keyboardContainerRow .nextNumber {
+    box-sizing: border-box;
+}
+
+/* English(USV4) layout renders in #innerKeyboard and uses .mtrow rows. */
+#innerKeyboard .normal,
+#innerKeyboard .finger1,
+#innerKeyboard .finger2,
+#innerKeyboard .finger3,
+#innerKeyboard .finger4,
+#innerKeyboard .fingerSpace,
+#innerKeyboard .next1,
+#innerKeyboard .next2,
+#innerKeyboard .next3,
+#innerKeyboard .next4,
+#innerKeyboard .nextEnter,
+#innerKeyboard .nextShift,
+#innerKeyboard .nextSpace,
+#innerKeyboard .nextNumber {
+    box-sizing: border-box;
+}
+
+#innerKeyboard .mtrow {
+    clear: both;
+}
+
+#innerKeyboard #jkeyenter {
+    min-width: 85px;
+}
+
+/* In English(USV4), turnOn() switches keys to next* classes.
+   Keep margins equal to base classes so highlighted keys do not widen rows. */
+#innerKeyboard .next1,
+#innerKeyboard .next2,
+#innerKeyboard .next3,
+#innerKeyboard .next4,
+#innerKeyboard .nextSpace,
+#innerKeyboard .nextEnter,
+#innerKeyboard .nextShift,
+#innerKeyboard .nextNumber {
+    margin-right: 0 !important;
+}
+
+/* Ensure completion/statistics modal remains readable without Bootstrap CSS file. */
+.modal {
+    display: none;
+    position: fixed;
+}
+
+.modal.in,
+.modal.show,
+.modal.fade.in {
+    display: block !important;
+}
+
+.modal.hide.in,
+.modal.hide.show,
+#modalLessonComplete.hide.in,
+#modalLessonComplete2.hide.in,
+#modalOptions.hide.in {
+    display: block !important;
+}
+
+#modalLessonComplete,
+#modalLessonComplete2,
+#modalOptions {
+    background: #ffffff !important;
+    color: #1f2933 !important;
+    border: 1px solid #c8d2dc !important;
+    border-radius: 8px;
+    position: fixed;
+    top: 12%;
+    left: 50%;
+    right: auto !important;
+    bottom: auto !important;
+    height: auto !important;
+    width: 560px;
+    max-width: 92vw;
+    margin-left: -280px;
+    z-index: 2002 !important;
+    overflow: visible !important;
+}
+
+#modalLessonComplete .modal-header,
+#modalLessonComplete2 .modal-header,
+#modalOptions .modal-header,
+#modalLessonComplete .modal-footer,
+#modalLessonComplete2 .modal-footer,
+#modalOptions .modal-footer {
+    background: #f3f6fa !important;
+    color: #1f2933 !important;
+    border-color: #c8d2dc !important;
+}
+
+#modalLessonComplete .modal-header,
+#modalLessonComplete2 .modal-header,
+#modalOptions .modal-header {
+    position: relative;
+}
+
+#modalLessonComplete .modal-body,
+#modalLessonComplete2 .modal-body,
+#modalOptions .modal-body,
+#modalLessonComplete .modal-body strong,
+#modalLessonComplete2 .modal-body strong,
+#modalLessonComplete #jsDetailMistake,
+#modalLessonComplete2 #jsDetailMistake {
+    color: #1f2933 !important;
+    background: #ffffff !important;
+}
+
+#modalLessonComplete .label-warning,
+#modalLessonComplete2 .label-warning {
+    color: #1f2933;
+    background: #fde68a;
+    border: 1px solid #f59e0b;
+}
+
+#modalLessonComplete .close,
+#modalLessonComplete2 .close,
+#modalOptions .close {
+    position: absolute;
+    right: 12px;
+    left: auto !important;
+    top: 8px;
+    float: none !important;
+    font-size: 22px;
+    line-height: 1;
+    font-weight: bold;
+    color: #111;
+    opacity: 0.7;
+}
+
+#modalLessonComplete .close:hover,
+#modalLessonComplete2 .close:hover,
+#modalOptions .close:hover {
+    opacity: 1;
+}
+
+#modalLessonComplete.in,
+#modalLessonComplete2.in,
+#modalOptions.in {
+    display: block !important;
+}
+
+.modal-backdrop,
+.modal-backdrop.in {
+    z-index: 2000 !important;
+    display: none !important;
+}
+
+@media (max-width: 640px) {
+    #modalLessonComplete,
+    #modalLessonComplete2,
+    #modalOptions {
+        left: 4vw;
+        right: 4vw;
+        width: auto;
+        margin-left: 0;
+        max-width: none;
+    }
+}
+
+/* Keep highlighted Qwerty keys aligned with base key sizing. */
+#keyboardContainerRow .keyboard {
+    /* Legacy keyboard CSS expects a 62.5% base, otherwise labels become oversized. */
+    font-size: 62.5%;
+}
+
+/* Keep right-side word-label keys centered like left-side labels. */
+#keyboardContainerRow #jkeyenter span.right,
+#keyboardContainerRow #jkeyshiftd span.right,
+#keyboardContainerRow #jkeyaltgr span.right,
+#keyboardContainerRow #key_right_cmd span.right,
+#keyboardContainerRow #jkeyctrlr span.right,
+#keyboardContainerRow #jkeybackspace span.right {
+    text-align: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#keyboardContainerRow #jkeybackspace span.right {
+    box-sizing: border-box;
+    text-align: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    transform: translateX(-6px);
+}
+
+/* Qwerty + guide hands: keep wide keys at fixed widths even when JS swaps to next* classes.
+   Without this, targeting space switches to .nextSpace (274px) and visibly shifts the layout. */
+#keyboardContainerRow .keyboard #jkeyspace,
+#keyboardContainerRow .keyboard #jkeyshiftl,
+#keyboardContainerRow .keyboard #jkeyshiftd,
+#keyboardContainerRow .keyboard #jkeybackspace,
+#keyboardContainerRow .keyboard #jkeytab,
+#keyboardContainerRow .keyboard #jkeycaps,
+#keyboardContainerRow .keyboard #jkeyenter,
+#keyboardContainerRow .keyboard #jkeyctrll,
+#keyboardContainerRow .keyboard #jkeyctrlr,
+#keyboardContainerRow .keyboard #jkeyalt,
+#keyboardContainerRow .keyboard #jkeyaltgr,
+#keyboardContainerRow .keyboard #key_left_cmd,
+#keyboardContainerRow .keyboard #key_right_cmd {
+    width: auto;
+}
+
+#keyboardContainerRow .keyboard #jkeyspace { width: 256px !important; }
+#keyboardContainerRow .keyboard #jkeyshiftl,
+#keyboardContainerRow .keyboard #jkeyshiftd { width: 98px !important; }
+#keyboardContainerRow .keyboard #jkeybackspace,
+#keyboardContainerRow .keyboard #jkeytab { width: 65px !important; }
+#keyboardContainerRow .keyboard #jkeycaps,
+#keyboardContainerRow .keyboard #jkeyenter { width: 75px !important; }
+#keyboardContainerRow .keyboard #jkeyctrll,
+#keyboardContainerRow .keyboard #jkeyctrlr,
+#keyboardContainerRow .keyboard #jkeyalt,
+#keyboardContainerRow .keyboard #jkeyaltgr,
+#keyboardContainerRow .keyboard #key_left_cmd,
+#keyboardContainerRow .keyboard #key_right_cmd { width: 61px !important; }
+
+#keyboardContainerRow .keyboard .next1,
+#keyboardContainerRow .keyboard .next2,
+#keyboardContainerRow .keyboard .next3,
+#keyboardContainerRow .keyboard .next4,
+#keyboardContainerRow .keyboard .nextEnter,
+#keyboardContainerRow .keyboard .nextShift,
+#keyboardContainerRow .keyboard .nextSpace,
+#keyboardContainerRow .keyboard .nextNumber {
+    box-sizing: border-box;
+}
+

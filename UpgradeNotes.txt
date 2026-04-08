@@ -1,3 +1,6 @@
+
+20260408 Many updates and upgrades to the code and now have it working in Moodle 5.1.
+
 10/27/2017 Installed Roshine into Moodle 2.3 on Odroid #1. At each redeclare error
 during the installation, I added ros_ to the function being reported. Changed a bunch in 
 lib.php and locallib.php, until the install finaly made it to the post install settings.

@@ -10,13 +10,143 @@ var intervalID = -1;
 var interval2ID = -1;
 var app_url;
 var show_keyboard;
+var continuous_type = false;
+var count_mistyped_spaces = false;
+var count_all_mistakes = false;
+var key_result = true;
 var snd = new Audio("sounds/type.ogg");
 var snd2 = new Audio("sounds/wrong.ogg");
 
 var mistakestring = "";
 
-window.onload = focusSet;
-window.onkeypress = onUserPressKey;
+function setAllById(id, value) {
+    var nodes = document.querySelectorAll('[id="' + id + '"]');
+    for (var i = 0; i < nodes.length; i++) {
+        nodes[i].innerHTML = value;
+    }
+}
+
+function setAllDisplayById(id, displayValue) {
+    var nodes = document.querySelectorAll('[id="' + id + '"]');
+    for (var i = 0; i < nodes.length; i++) {
+        nodes[i].style.display = displayValue;
+    }
+}
+
+function showRosModalById(modalid) {
+    var modalel = document.getElementById(modalid);
+    if (!modalel) {
+        return;
+    }
+    if (typeof window.$ === 'function') {
+        try {
+            var modal = window.$('#' + modalid);
+            if (modal && typeof modal.modal === 'function') {
+                modal.modal('show');
+            }
+        } catch (ignore) {
+            // Fall through to direct DOM fallback below.
+        }
+    }
+    modalel.classList.remove('hide');
+    modalel.classList.add('in');
+    modalel.style.display = 'block';
+    modalel.setAttribute('aria-hidden', 'false');
+}
+
+function renderTypingChar(ch) {
+    if (ch === '\n') {
+        return '&darr;';
+    }
+    if (ch === ' ') {
+        return '&nbsp;';
+    }
+    return ch;
+}
+
+window.addEventListener('load', function() {
+    focusSet();
+});
+
+function shouldIgnoreKeyDown(e) {
+    var key = e && e.key ? e.key : '';
+    return key === 'Shift' || key === 'Control' || key === 'Alt' || key === 'Meta' ||
+        key === 'CapsLock' || key === 'Tab' || key === 'Escape' || key === 'AltGraph';
+}
+
+function isEnterTarget(ch) {
+    return ch === '\n' || ch === '\r\n' || ch === '\n\r' || ch === '\r';
+}
+
+function isCharMatch(expected, typed) {
+    if (typed === expected) {
+        return true;
+    }
+    if (isEnterTarget(expected) && typed === ' ') {
+        return true;
+    }
+    return false;
+}
+
+function markMistakeForCurrentChar() {
+    error++;
+    mistakestring += currentChar;
+}
+
+function shouldCountMistakeForWrongKey(keychar) {
+    if (keychar === ' ' && !count_mistyped_spaces) {
+        return false;
+    }
+    if (count_all_mistakes) {
+        return true;
+    }
+    return key_result;
+}
+
+function advanceToNextPosition() {
+    if (show_keyboard && typeof keyboardElement === 'function') {
+        var thisE = new keyboardElement(currentChar);
+        thisE.turnOff();
+    }
+
+    if (currentPos === fullText.length - 1) {
+        doTheEnd();
+        return true;
+    }
+
+    if (currentPos < fullText.length - 1) {
+        var nextChar = fullText[currentPos + 1];
+        if (show_keyboard && typeof keyboardElement === 'function') {
+            var nextE = new keyboardElement(nextChar);
+            nextE.turnOn();
+        }
+    }
+
+    moveCursor(currentPos + 1);
+    scrollit(currentPos + 1);
+    currentChar = fullText[currentPos + 1];
+    currentPos++;
+    key_result = true;
+    return true;
+}
+
+document.addEventListener('keydown', function(e) {
+    if (ended) {
+        return;
+    }
+    if (!document.form1 || !document.form1.tb1) {
+        return;
+    }
+    if (shouldIgnoreKeyDown(e)) {
+        return;
+    }
+    if (e.ctrlKey || e.altKey || e.metaKey) {
+        return;
+    }
+    var handled = onUserPressKey(e);
+    // Prevent default so the same key is not processed again by onkeypress.
+    e.preventDefault();
+});
 
 /**
  * If not the end of fullText, move cursor to next character.
@@ -46,10 +176,13 @@ function scrollit(nextPos) {
  */
 function doTheEnd() {
     // Execute modalLessonComplete when exercise is done.
-    $(document).ready(function(){
-        $('#modalLessonComplete').modal('show');
-    setOptionModalAttributes();
-    });
+    showRosModalById('modalLessonComplete');
+    setTimeout(function() {
+        showRosModalById('modalLessonComplete');
+    }, 75);
+    if (typeof setOptionModalAttributes === 'function') {
+        setOptionModalAttributes();
+    }
 
     document.getElementById('crka'+(fullText.length-1)).className = "txtZeleno";
     ended = true;
@@ -62,11 +195,15 @@ function doTheEnd() {
     var secs = differenceT.getSeconds();
     var samoSekunde = converToSeconds(hours, mins, secs); 
     var speed = tinhtoanTocDo(samoSekunde);
+    var acc = tinhDoChinhXac(fullText, error).toFixed(1);
+    var accnum = parseFloat(acc);
+    var goalnum = parseFloat(document.form1.rpGoal.value);
     document.form1.rpFullHits.value = (fullText.length + error);
     document.form1.rpTimeInput.value = samoSekunde;
     document.form1.rpMistakesInput.value = error;
     document.form1.rpAccInput.value = tinhDoChinhXac(fullText, error).toFixed(2);
     document.form1.rpSpeedInput.value = speed;
+    document.form1.rpWpmInput.value = Math.max(0, (speed / 5) - error).toFixed(0);
     document.form1.tb1.disabled="disabled";    
     document.form1.btnContinue.style.visibility="visible";
     var request = makeHttpObject();
@@ -74,6 +211,16 @@ function doTheEnd() {
     var juri =  app_url+"/mod/roshine/atchk.php?status=3&attemptid="+rpAttId;
     request.open("GET", juri, true);
     request.send(null);
+
+    setAllById('modalWPM', speed.toFixed(2));
+    setAllById('modalAccuracy', acc + '%');
+    mistakestring_calc();
+
+    if (!isNaN(goalnum) && goalnum > 0 && !isNaN(accnum) && accnum < goalnum) {
+        setAllDisplayById('modalError', 'block');
+    } else {
+        setAllDisplayById('modalError', 'none');
+    }
 }
 
 /**
@@ -81,15 +228,22 @@ function doTheEnd() {
  *
  */
 function getPressedChar(e) {
-    var keynum
-    var keychar
-    var numcheck
-    if(window.event) { // IE
-        keynum = e.keyCode
-    } else if (e.which) { // Netscape/Firefox/Opera
-        keynum = e.which
+    var keynum;
+    var keychar;
+    if (e && typeof e.key === 'string') {
+        if (e.key === 'Enter') {
+            return '\n';
+        }
+        if (e.key.length === 1) {
+            return e.key;
+        }
     }
-    if(keynum == 13) {
+    if (window.event) { // IE
+        keynum = e.keyCode;
+    } else if (e.which) { // Netscape/Firefox/Opera
+        keynum = e.which;
+    }
+    if (keynum == 13) {
         keychar = '\n';
     } else {
         keychar = String.fromCharCode(keynum);
@@ -102,19 +256,11 @@ function getPressedChar(e) {
  *
  */
 function focusSet(e) {
-    if(!started)
-    {
-        document.form1.tb1.value=''; 
-        if(show_keyboard){
-            var thisEl = new keyboardElement(fullText[0]);
-            thisEl.turnOn();
-        }
-        return true;
+    if (!started && show_keyboard && typeof keyboardElement === 'function' && fullText && fullText.length > 0) {
+        var thisEl = new keyboardElement(fullText[0]);
+        thisEl.turnOn();
     }
-    else{
-        document.form1.tb1.value=fullText.substring(0, currentPos); 
-        return true;
-    }
+    return true;
 }
 
 /**
@@ -138,8 +284,10 @@ function doCheck() {
 function doStart() {
     startTime = new Date();
     error = 0;
+    mistakestring = "";
     currentPos = 0;
     started = true;
+    key_result = true;
     currentChar = fullText[currentPos];
     intervalID = setInterval('updTimeSpeed()', 1000);
     var request = makeHttpObject();
@@ -177,37 +325,22 @@ function onUserPressKey(e) {
         doStart();
     }
     var keychar = getPressedChar(e);
-    if (keychar == currentChar || ((currentChar == '\n' || currentChar == '\r\n' || currentChar == '\n\r' || currentChar == '\r') && (keychar == ' '))) {
-        if (show_keyboard) {
-            var thisE = new keyboardElement(currentChar);
-            thisE.turnOff();
-        }
-        if (currentPos == fullText.length-1) {    //KONEC
-            doTheEnd();
-            return true;
-        }
-        if (currentPos < fullText.length-1) {
-            var nextChar = fullText[currentPos+1];
-            if (show_keyboard) {
-                var nextE = new keyboardElement(nextChar);
-                nextE.turnOn();
-            }
-        }
-        moveCursor(currentPos+1);
-        scrollit(currentPos+1);
-        currentChar = fullText[currentPos+1];
-        currentPos++;
-        
-        return true;    
-    //}
-    //else if(keychar == ' ')
-    //    return false;    // khong tinh loi khi danh khoang trang nhieu lan - do not bother typing errors multiple times
+    if (isCharMatch(currentChar, keychar)) {
+        key_result = true;
+        return advanceToNextPosition();
     } else { // When typing the wrong key.
         if (document.getElementById('optSound').checked == true) snd2.cloneNode(true).play(); // play sound = khi go sai phim
-        error++; // mistake tang len 1
-        mistakestring += currentChar;
-        
-        return false;
+
+        if (shouldCountMistakeForWrongKey(keychar)) {
+            markMistakeForCurrentChar();
+        }
+        key_result = false;
+
+        if (!continuous_type) {
+            return false;
+        }
+
+        return advanceToNextPosition();
     }
 }
 
@@ -251,17 +384,28 @@ function timeDifference(t1, t2) {
  *
  */
 function initTypingText(ttext, tinprogress, tmistakes, thits, tstarttime, tattemptid, turl, tshowkeyboard) {
+    var tcontinuoustype = arguments.length > 8 ? arguments[8] : false;
+    var tcountmistypedspaces = arguments.length > 9 ? arguments[9] : false;
+    var tcountmistakes = arguments.length > 10 ? arguments[10] : false;
     show_keyboard = tshowkeyboard;
+    continuous_type = !!tcontinuoustype;
+    count_mistyped_spaces = !!tcountmistypedspaces;
+    count_all_mistakes = !!tcountmistakes;
     fullText = ttext;
     app_url = turl;
     var tempStr="";
+    var resumedpos = (thits - tmistakes);
+    // If resume position is out of range, do a clean start instead of a broken locked state.
+    if (tinprogress && (resumedpos < 0 || resumedpos >= ttext.length)) {
+        tinprogress = 0;
+    }
     if(tinprogress){
         document.form1.rpAttId.value = tattemptid;
         startTime = new Date(tstarttime*1000);
         error = tmistakes;
-        currentPos = (thits - tmistakes);   //!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        currentPos = resumedpos;   //!!!!!!!!!!!!!!!!!!!!!!!!!!!
         currentChar = fullText[currentPos];
-        if(show_keyboard){
+        if(show_keyboard && typeof keyboardElement === 'function') {
             var nextE = new keyboardElement(currentChar);
             nextE.turnOn();
         }
@@ -271,19 +415,21 @@ function initTypingText(ttext, tinprogress, tmistakes, thits, tstarttime, tattem
         for(var i=0; i<currentPos; i++)
         {
             var tChar = ttext[i];
-            if(tChar == '\n')
-                tempStr += "<span id='crka"+i+"' class='txtZeleno'>&darr;</span><br>";
-            else
-                tempStr += "<span id='crka"+i+"' class='txtZeleno'>"+tChar+"</span>";
+            if(tChar == '\n') {
+                tempStr += "<span id='crka"+i+"' class='txtZeleno'>" + renderTypingChar(tChar) + "</span><br>";
+            } else {
+                tempStr += "<span id='crka"+i+"' class='txtZeleno'>" + renderTypingChar(tChar) + "</span>";
+            }
         }
-        tempStr += "<span id='crka"+currentPos+"' class='txtModro'>"+currentChar+"</span>";
+        tempStr += "<span id='crka"+currentPos+"' class='txtModro'>" + renderTypingChar(currentChar) + "</span>";
         for(var j=currentPos+1; j<ttext.length; j++)
         {
             var tChar = ttext[j];
-            if(tChar == '\n')
-                tempStr += "<span id='crka"+j+"' class='txtRdece'>&darr;</span><br>";
-            else
-                tempStr += "<span id='crka"+j+"' class='txtRdece'>"+tChar+"</span>";
+            if(tChar == '\n') {
+                tempStr += "<span id='crka"+j+"' class='txtRdece'>" + renderTypingChar(tChar) + "</span><br>";
+            } else {
+                tempStr += "<span id='crka"+j+"' class='txtRdece'>" + renderTypingChar(tChar) + "</span>";
+            }
         }
         document.getElementById('textToEnter').innerHTML = tempStr;
         document.getElementById('textToEnter').scrollTop = document.getElementById('crka'+(currentPos)).offsetTop; // cuon xuong vi tri dang = go roll down position is typing
@@ -296,11 +442,11 @@ function initTypingText(ttext, tinprogress, tmistakes, thits, tstarttime, tattem
             var tChar = ttext[i];
 
             if(i==0)
-                tempStr += "<span id='crka"+i+"' class='txtModro'>"+tChar+"</span>";
+                tempStr += "<span id='crka"+i+"' class='txtModro'>" + renderTypingChar(tChar) + "</span>";
             else if(tChar == '\n')
-                tempStr += "<span id='crka"+i+"' class='txtRdece'>&darr;</span><br>";
+                tempStr += "<span id='crka"+i+"' class='txtRdece'>" + renderTypingChar(tChar) + "</span><br>";
             else
-                tempStr += "<span id='crka"+i+"' class='txtRdece'>"+tChar+"</span>";
+                tempStr += "<span id='crka"+i+"' class='txtRdece'>" + renderTypingChar(tChar) + "</span>";
         }
         document.getElementById('textToEnter').innerHTML = tempStr;
     
@@ -372,16 +518,22 @@ function updTimeSpeed() {
     }
     document.getElementById('jsTime2').innerHTML = tDifference.getMinutes()+':'+tDifference.getSeconds();
     document.getElementById('jsAcc2').innerHTML = tinhDoChinhXac(fullText, error).toFixed(1);
-    document.getElementById('jsProgress2f').innerHTML = currentPos + "/" +fullText.length;
+    document.getElementById('jsProgress2').innerHTML = currentPos + "/" +fullText.length;
 }
 
-function mistakestring_calc()
-{
-    document.getElementById('jsDetailMistake').innerHTML = DemSoKyTu(mistakestring);
+function mistakestring_calc() {
+    var details = DemSoKyTu(mistakestring);
+    if (!details) {
+        details = 'No mistakes';
+    }
+    setAllById('jsDetailMistake', details);
 }
+
 // Separation of characters = TachKyTu
-function TachKyTu(str)
-{
+function TachKyTu(str) {
+    if (!str || str.length === 0) {
+        return [];
+    }
     var array = new Array();
     var k = 1 ;
     array[0] = str[0];
@@ -392,26 +544,28 @@ function TachKyTu(str)
                 array[k] = str[i] ;
                 k++;    
             }
-            if( str[i] == array[j] ) break;    
+            if ( str[i] == array[j] ) break;    
         }
     }
     return array;
 }
+
 // Counting the sign = DemSoKyTu
 // Separation of characters = TachKyTu
 // result = ketqua
 // night = dem <- number of mistakes for the current character
-
-function DemSoKyTu(str)
-{
+function DemSoKyTu(str) {
+    if (!str || str.length === 0) {
+        return '';
+    }
     var arr = TachKyTu(str);
     
     var arrC = new Array();
     var ketqua = "" ;
     //alert(arr);
-    for( var j = 0 ; j<arr.length ; j++){
+    for ( var j = 0 ; j<arr.length ; j++) {
         var dem = 0 ;
-        for ( var i = 0 ; i< str.length ; i++ ){
+        for ( var i = 0 ; i< str.length ; i++ ) {
             if(str[i] == arr[j]) dem++;
         }
         

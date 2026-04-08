@@ -26,9 +26,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019121301;     // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2014051200;     // Requires Moodle 2.7.
+$plugin->version   = 2026040800;     // The current module version (Date: YYYYMMDDXX).
+//$plugin->requires  = 2014051200;     // Requires Moodle 2.7.
+$plugin->requires  = 2025100603;     // Requires Moodle 5.1.
 $plugin->cron      = 60;             // Period for cron to check this module (secs).
 $plugin->component = 'mod_roshine';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.8.2 (Build: 2019121301)';
+$plugin->release   = '4.0.0 (Build: 2026040800)';
